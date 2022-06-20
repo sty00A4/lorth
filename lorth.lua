@@ -71,6 +71,32 @@ local function Error(type_, details, pos)
     )
 end
 
+local function Number(number)
+    return setmetatable(
+            { value = number },
+            {
+                __name = "number", __tostring = function(s) return tostring(s.value) end,
+                __eq = function(s, o) return s.value == o.value end,
+                __le = function(s, o) return s.value <= o.value end,
+                __lt = function(s, o) return s.value < o.value end,
+                __add = function(s, o) return Number(s.value + o.value) end,
+                __sub = function(s, o) return Number(s.value - o.value) end,
+                __mul = function(s, o) return Number(s.value * o.value) end,
+                __div = function(s, o) return Number(s.value / o.value) end,
+                __mod = function(s, o) return Number(s.value % o.value) end,
+                __pow = function(s, o) return Number(s.value ^ o.value) end,
+                __idiv = function(s, o) return Number(s.value // o.value) end,
+                __unm = function(s) return Number(-s.value) end,
+            }
+    )
+end
+local function Var(name)
+    return setmetatable(
+            { name = name },
+            { __name = "var" }
+    )
+end
+
 local opFuncs = {
     ["+"] = function(stack)
         local a = pop(stack)
@@ -126,19 +152,25 @@ local opFuncs = {
         if b > a then push(stack, 1) else push(stack, 0) end
         return stack
     end,
+    ["#"] = function(stack, token)
+        local a = pop(stack)
+        if stack[a.value+1] then push(stack, stack[a.value+1]) else return nil, Error("index error", "index out of range", token.pos) end
+        return stack
+    end,
     ["rot"] = function(stack)
         local a = pop(stack)
+        if not a then return stack end
         push(stack, 1, a)
         return stack
     end,
     ["flr"] = function(stack)
         local a = pop(stack)
-        push(stack, math.floor(a))
+        push(stack, Number(math.floor(a.value)))
         return stack
     end,
     ["ceil"] = function(stack)
         local a = pop(stack)
-        push(stack, math.ceil(a))
+        push(stack, Number(math.ceil(a.value)))
         return stack
     end,
     ["pop"] = function(stack)
@@ -171,15 +203,6 @@ local function lex(fn, text)
                 advance()
             end
             push(tokens, Token("number", tonumber(numStr), PositionRange(start, stop)))
-        elseif contStart(keywords, char) then
-            local start, stop = pos:copy(), pos:copy()
-            local str = char
-            advance()
-            while contStart(keywords, str..char) and #char > 0 do
-                str = str .. char
-                advance()
-            end
-            push(tokens, Token("keyword", str, PositionRange(start, stop)))
         elseif contKeyStart(opFuncs, char) then
             local start, stop = pos:copy(), pos:copy()
             local str = char
@@ -189,11 +212,20 @@ local function lex(fn, text)
                 advance()
             end
             push(tokens, Token("op", str, PositionRange(start, stop)))
+        elseif contStart(keywords, char) then
+            local start, stop = pos:copy(), pos:copy()
+            local str = char
+            advance()
+            while contStart(keywords, str..char) and #char > 0 do
+                str = str .. char
+                advance()
+            end
+            push(tokens, Token("keyword", str, PositionRange(start, stop)))
         elseif cont(string.letters, char) or char == "_" then
             local start, stop = pos:copy(), pos:copy()
             local word = char
             advance()
-            while (cont(string.letters, char) or char == "_") and #char > 0 do
+            while (cont(string.letters, char) or cont(string.digits, char) or char == "_") and #char > 0 do
                 word = word .. char
                 advance()
             end
@@ -205,7 +237,7 @@ local function lex(fn, text)
             if not (cont(string.letters, char) or char == "_") then return nil, Error("syntax error", "expected character", PositionRange(pos:copy(), pos:copy())) end
             local word = char
             advance()
-            while (cont(string.letters, char) or char == "_") and #char > 0 do
+            while (cont(string.letters, char) or cont(string.digits, char) or char == "_") and #char > 0 do
                 word = word .. char
                 advance()
             end
@@ -216,31 +248,6 @@ local function lex(fn, text)
     return tokens
 end
 
-local function Number(number)
-    return setmetatable(
-            { value = number },
-            {
-                __name = "number", __tostring = function(s) return tostring(s.value) end,
-                __eq = function(s, o) return Number(s.value == o.value) end,
-                __le = function(s, o) return Number(s.value <= o.value) end,
-                __lt = function(s, o) return Number(s.value < o.value) end,
-                __add = function(s, o) return Number(s.value + o.value) end,
-                __sub = function(s, o) return Number(s.value - o.value) end,
-                __mul = function(s, o) return Number(s.value * o.value) end,
-                __div = function(s, o) return Number(s.value / o.value) end,
-                __mod = function(s, o) return Number(s.value % o.value) end,
-                __pow = function(s, o) return Number(s.value ^ o.value) end,
-                __idiv = function(s, o) return Number(s.value // o.value) end,
-                __unm = function(s) return Number(-s.value) end,
-            }
-    )
-end
-local function Var(name)
-    return setmetatable(
-            { name = name },
-            { __name = "var" }
-    )
-end
 local function interpret(tokens)
     local stack, vars, i, token = {}, {}, 0
     local indent = 0
@@ -300,7 +307,7 @@ local function interpret(tokens)
             if token.type == "name" then push(stack, Var(token.value)) advance() end
             if token.type == "nameRef" then if vars[token.value] then push(stack, vars[token.value]) advance() else
                 return nil, Error("name error", "name "..token.value.." not registered", token.pos:copy()) end end
-            if token.type == "op" then stack = opFuncs[token.value](stack) advance() end
+            if token.type == "op" then stack, err = opFuncs[token.value](stack, token) if err then return nil, err end advance() end
             if token.type == "eof" then break end
         end
         indent=indent-1
