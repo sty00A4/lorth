@@ -85,7 +85,7 @@ local function Error(type_, details, pos)
 end
 
 local function Number(number)
-    if number == math.tointeger(number) then number = math.tointeger(number) end
+    if number == math.floor(number) then number = math.floor(number) end
     return setmetatable(
             { value = number },
             {
@@ -275,6 +275,11 @@ opFuncs = {
         end
         return stack
     end,
+    ["int"] = function(stack)
+        local a = pop(stack)
+        push(stack, Number(math.floor(a.value)))
+        return stack
+    end,
 }
 local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["end"] = "end", ["set"] = "set" }
 local reqEnd = { keywords["if"], keywords["repeat"], }
@@ -309,7 +314,8 @@ local function lex(fn, text)
                 str = str .. char
                 advance()
             end
-            push(tokens, Token("op", str, PositionRange(start, stop)))
+            if contKey(opFuncs, str) then push(tokens, Token("op", str, PositionRange(start, stop)))
+            else push(tokens, Token("name", str, PositionRange(start, stop))) end
         elseif contStart(keywords, char) then
             local start, stop = pos:copy(), pos:copy()
             local str = char
