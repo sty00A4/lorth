@@ -85,6 +85,7 @@ local function Error(type_, details, pos)
 end
 
 local function Number(number)
+    if number == math.tointeger(number) then number = math.tointeger(number) end
     return setmetatable(
             { value = number },
             {
@@ -110,7 +111,8 @@ local function Var(name)
     )
 end
 
-local opFuncs = {
+local opFuncs
+opFuncs = {
     ["+"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
@@ -141,7 +143,7 @@ local opFuncs = {
         push(stack, b % a)
         return stack
     end,
-    ["^"] = function(stack)
+    ["**"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
         push(stack, b ^ a)
@@ -255,6 +257,22 @@ local opFuncs = {
     end,
     ["len"] = function(stack)
         push(stack, Number(#stack))
+        return stack
+    end,
+    ["sum"] = function(stack)
+        for i = 1, #stack-1 do stack = opFuncs["+"](stack) end
+        return stack
+    end,
+    ["prod"] = function(stack)
+        for i = 1, #stack-1 do stack = opFuncs["*"](stack) end
+        return stack
+    end,
+    ["range"] = function(stack)
+        local a = pop(stack)
+        local b = pop(stack)
+        for i = b.value, a.value do
+            push(stack, Number(i))
+        end
         return stack
     end,
 }
