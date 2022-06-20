@@ -202,6 +202,49 @@ local opFuncs = {
         pop(stack)
         return stack
     end,
+    ["shift"] = function(stack)
+        pop(stack, 1)
+        return stack
+    end,
+    ["filter"] = function(stack)
+        local a, i = pop(stack), 1
+        while i <= #stack do
+            if a ~= stack[i] then pop(stack, i) else i=i+1 end
+        end
+        return stack
+    end,
+    ["filterLT"] = function(stack)
+        local a, i = pop(stack), 1
+        while i <= #stack do
+            if a <= stack[i] then pop(stack, i) else i=i+1 end
+        end
+        return stack
+    end,
+    ["filterGT"] = function(stack)
+        local a, i = pop(stack), 1
+        while i <= #stack do
+            if a >= stack[i] then pop(stack, i) else i=i+1 end
+        end
+        return stack
+    end,
+    ["filterLE"] = function(stack)
+        local a, i = pop(stack), 1
+        while i <= #stack do
+            if a < stack[i] then pop(stack, i) else i=i+1 end
+        end
+        return stack
+    end,
+    ["filterGE"] = function(stack)
+        local a, i = pop(stack), 1
+        while i <= #stack do
+            if a > stack[i] then pop(stack, i) else i=i+1 end
+        end
+        return stack
+    end,
+    ["len"] = function(stack)
+        push(stack, Number(#stack))
+        return stack
+    end,
 }
 local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["end"] = "end", ["set"] = "set" }
 local reqEnd = { keywords["if"], keywords["repeat"], }
