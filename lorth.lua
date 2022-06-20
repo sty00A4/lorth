@@ -30,6 +30,19 @@ string.join = function(s, t)
     end
     return str
 end
+local function insertionSort(array)
+    local len = #array
+    for j = 2, len do
+        local key = array[j]
+        local i = j - 1
+        while i > 0 and array[i] > key do
+            array[i + 1] = array[i]
+            i = i - 1
+        end
+        array[i + 1] = key
+    end
+    return array
+end
 local push = table.insert
 local pop = table.remove
 local cont = table.contains
@@ -162,6 +175,18 @@ local opFuncs = {
         if not a then return stack end
         push(stack, 1, a)
         return stack
+    end,
+    ["rev"] = function(stack)
+        if #stack == 0 then return stack end
+        for i = 1, #stack do
+            local a = pop(stack)
+            push(stack, i, a)
+        end
+        return stack
+    end,
+    ["sort"] = function(stack)
+        if #stack <= 1 then return stack end
+        return insertionSort(stack)
     end,
     ["flr"] = function(stack)
         local a = pop(stack)
