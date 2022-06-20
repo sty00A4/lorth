@@ -165,6 +165,18 @@ local opFuncs = {
         if b > a then push(stack, 1) else push(stack, 0) end
         return stack
     end,
+    ["<="] = function(stack)
+        local a = pop(stack)
+        local b = pop(stack)
+        if b <= a then push(stack, 1) else push(stack, 0) end
+        return stack
+    end,
+    [">="] = function(stack)
+        local a = pop(stack)
+        local b = pop(stack)
+        if b >= a then push(stack, 1) else push(stack, 0) end
+        return stack
+    end,
     ["#"] = function(stack, token)
         local a = pop(stack)
         if stack[a.value+1] then push(stack, stack[a.value+1]) else return nil, Error("index error", "index out of range", token.pos) end
