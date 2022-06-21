@@ -43,6 +43,10 @@ local function insertionSort(array)
     end
     return array
 end
+local function sleep(a)
+    local sec = tonumber(os.clock() + a)
+    while (os.clock() < sec) do end
+end
 local push = table.insert
 local pop = table.remove
 local cont = table.contains
@@ -71,7 +75,15 @@ end
 local function Token(type_, value, pos)
     return setmetatable(
             { type = type_, value = value, pos = pos, copy = function(s) return Token(s.type, s.value) end },
-            { __name = "token", __tostring = function(s) if s.value then return "["..s.type..":"..tostring(s.value).."]" else return "["..s.type.."]" end end }
+            { __name = "token", __tostring = function(s)
+                if s.value then
+                    if type(s.value) == "table" then
+                        local str = "{ "
+                        for _, v in ipairs(s.value) do str = str .. tostring(v) .. ", " end
+                        return "["..s.type..":"..str:sub(1,#str-2).."]"
+                    else return "["..s.type..":"..tostring(s.value).."]" end
+                else return "["..s.type.."]" end
+            end }
     )
 end
 local function Error(type_, details, pos)
@@ -84,6 +96,15 @@ local function Error(type_, details, pos)
     )
 end
 
+local function Stack()
+    return setmetatable(
+            {},
+            { __name = "stack", __index = function(s, i)
+                for _, val in ipairs(s) do io.write("[",tostring(val),"] ") end print()
+                for idx, v in ipairs(s) do if idx == i then return v end end
+            end }
+    )
+end
 local function Number(number)
     if number == math.floor(number) then number = math.floor(number) end
     return setmetatable(
@@ -117,82 +138,108 @@ opFuncs = {
     ["+"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         push(stack, b + a)
         return stack
     end,
     ["-"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         push(stack, b - a)
         return stack
     end,
     ["*"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         push(stack, b * a)
         return stack
     end,
     ["/"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         push(stack, b / a)
         return stack
     end,
     ["%"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         push(stack, b % a)
         return stack
     end,
     ["**"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         push(stack, b ^ a)
         return stack
     end,
     ["="] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         if b == a then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     ["!"] = function(stack)
         local a = pop(stack)
+        if not a then return stack end
         push(stack, ~a)
         return stack
     end,
     ["!="] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         if a ~= b then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     ["<"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         if b < a then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     [">"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         if b > a then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     ["<="] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         if b <= a then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     [">="] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         if b >= a then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     ["#"] = function(stack, token)
         local a = pop(stack)
+        if not a then return stack end
         if stack[a.value+1] then push(stack, stack[a.value+1]) else return nil, Error("index error", "index out of range", token.pos) end
         return stack
     end,
@@ -204,6 +251,7 @@ opFuncs = {
     end,
     ["dup"] = function(stack)
         local a = pop(stack)
+        if not a then return stack end
         push(stack, a)
         push(stack, a:copy())
         return stack
@@ -211,6 +259,8 @@ opFuncs = {
     ["swap"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         push(stack, a:copy())
         push(stack, b:copy())
         return stack
@@ -218,18 +268,23 @@ opFuncs = {
     ["over"] = function(stack)
         if not stack[1] then return stack end
         local a = stack[1]:copy()
+        if not a then return stack end
         push(stack, a)
         return stack
     end,
     ["max"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         if a.value > b.value then push(stack, a) else push(stack, b) end
         return stack
     end,
     ["min"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         if a.value < b.value then push(stack, a) else push(stack, b) end
         return stack
     end,
@@ -237,6 +292,7 @@ opFuncs = {
         if #stack == 0 then return stack end
         for i = 1, #stack do
             local a = pop(stack)
+            if not a then return stack end
             push(stack, i, a)
         end
         return stack
@@ -247,11 +303,13 @@ opFuncs = {
     end,
     ["flr"] = function(stack)
         local a = pop(stack)
+        if not a then return stack end
         push(stack, Number(math.floor(a.value)))
         return stack
     end,
     ["ceil"] = function(stack)
         local a = pop(stack)
+        if not a then return stack end
         push(stack, Number(math.ceil(a.value)))
         return stack
     end,
@@ -265,6 +323,7 @@ opFuncs = {
     end,
     ["filter"] = function(stack)
         local a, i = pop(stack), 1
+        if not a then return stack end
         while i <= #stack do
             if a ~= stack[i] then pop(stack, i) else i=i+1 end
         end
@@ -272,6 +331,7 @@ opFuncs = {
     end,
     ["filterLT"] = function(stack)
         local a, i = pop(stack), 1
+        if not a then return stack end
         while i <= #stack do
             if a <= stack[i] then pop(stack, i) else i=i+1 end
         end
@@ -279,6 +339,7 @@ opFuncs = {
     end,
     ["filterGT"] = function(stack)
         local a, i = pop(stack), 1
+        if not a then return stack end
         while i <= #stack do
             if a >= stack[i] then pop(stack, i) else i=i+1 end
         end
@@ -286,6 +347,7 @@ opFuncs = {
     end,
     ["filterLE"] = function(stack)
         local a, i = pop(stack), 1
+        if not a then return stack end
         while i <= #stack do
             if a < stack[i] then pop(stack, i) else i=i+1 end
         end
@@ -293,6 +355,7 @@ opFuncs = {
     end,
     ["filterGE"] = function(stack)
         local a, i = pop(stack), 1
+        if not a then return stack end
         while i <= #stack do
             if a > stack[i] then pop(stack, i) else i=i+1 end
         end
@@ -313,6 +376,8 @@ opFuncs = {
     ["range"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
+        if not a then return stack end
+        if not b then return stack end
         for i = b.value, a.value do
             push(stack, Number(i))
         end
@@ -320,6 +385,7 @@ opFuncs = {
     end,
     ["int"] = function(stack)
         local a = pop(stack)
+        if not a then return stack end
         push(stack, Number(math.floor(a.value)))
         return stack
     end,
@@ -334,7 +400,7 @@ local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["end"] = "end", ["set"
 local reqEnd = { keywords["if"], keywords["repeat"], }
 
 local function lex(fn, text)
-    local tokens, pos, char = {}, Position(0, 1, 0, fn, text)
+    local pos, char = Position(0, 1, 0, fn, text)
     local function update() char = text:sub(pos.idx,pos.idx) end
     local function advance()
         pos.idx = pos.idx + 1
@@ -343,99 +409,102 @@ local function lex(fn, text)
         if char == "\n" then pos.ln = pos.ln + 1 end
     end
     advance()
-    while #char > 0 do
-        if char == " " or char == "\t" or char == "\n" then advance()
-        elseif cont(string.digits, char) then
-            local start, stop = pos:copy(), pos:copy()
-            local numStr = char
-            advance()
-            while (cont(string.digits, char) or char == ".") and #char > 0 do
-                numStr = numStr .. char
+    local function main(stopChar)
+        local tokens = {}
+        while #char > 0 do
+            if char == " " or char == "\t" or char == "\n" then advance()
+            elseif char == stopChar then break
+            elseif cont(string.digits, char) then
+                local start, stop = pos:copy(), pos:copy()
+                local numStr = char
+                advance()
+                while (cont(string.digits, char) or char == ".") and #char > 0 do
+                    numStr = numStr .. char
+                    stop = pos:copy()
+                    advance()
+                end
+                push(tokens, Token("number", tonumber(numStr), PositionRange(start, stop)))
+            elseif cont(string.letters, char) or char == "_" then
+                local start, stop = pos:copy(), pos:copy()
+                local word = char
+                advance()
+                while (cont(string.letters, char) or cont(string.digits, char) or char == "_") and #char > 0 do
+                    word = word .. char
+                    advance()
+                end
+                if contKey(opFuncs, word) then push(tokens, Token("op", word, PositionRange(start, stop)))
+                elseif cont(keywords, word) then push(tokens, Token("keyword", word, PositionRange(start, stop)))
+                else push(tokens, Token("name", word, PositionRange(start, stop))) end
+            elseif contStart(symbols, char) then
+                local start, stop = pos:copy(), pos:copy()
+                local symbol = char
+                advance()
+                while contStart(symbols, symbol .. char) and #char > 0 do
+                    symbol = symbol .. char
+                    advance()
+                end
+                push(tokens, Token("op", symbol, PositionRange(start, stop)))
+            elseif char == "@" then
+                local start, stop = pos:copy(), pos:copy()
+                advance()
+                if not (cont(string.letters, char) or char == "_") then return nil, Error("syntax error", "expected character", PositionRange(pos:copy(), pos:copy())) end
+                local word = char
+                advance()
+                while (cont(string.letters, char) or cont(string.digits, char) or char == "_") and #char > 0 do
+                    word = word .. char
+                    advance()
+                end
+                push(tokens, Token("nameRef", word, PositionRange(start, stop)))
+            elseif char == "(" then
+                local start, stop = pos:copy(), pos:copy()
+                advance()
+                local subTokens, err = main(")") if err then return nil, err end
                 stop = pos:copy()
                 advance()
-            end
-            push(tokens, Token("number", tonumber(numStr), PositionRange(start, stop)))
-        elseif cont(string.letters, char) or char == "_" then
-            local start, stop = pos:copy(), pos:copy()
-            local word = char
-            advance()
-            while (cont(string.letters, char) or cont(string.digits, char) or char == "_") and #char > 0 do
-                word = word .. char
-                advance()
-            end
-            if contKey(opFuncs, word) then push(tokens, Token("op", word, PositionRange(start, stop)))
-            elseif cont(keywords, word) then push(tokens, Token("keyword", word, PositionRange(start, stop)))
-            else push(tokens, Token("name", word, PositionRange(start, stop))) end
-        elseif contStart(symbols, char) then
-            local start, stop = pos:copy(), pos:copy()
-            local symbol = char
-            advance()
-            while contStart(symbols, symbol .. char) and #char > 0 do
-                symbol = symbol .. char
-                advance()
-            end
-            push(tokens, Token("op", symbol, PositionRange(start, stop)))
-        elseif char == "@" then
-            local start, stop = pos:copy(), pos:copy()
-            advance()
-            if not (cont(string.letters, char) or char == "_") then return nil, Error("syntax error", "expected character", PositionRange(pos:copy(), pos:copy())) end
-            local word = char
-            advance()
-            while (cont(string.letters, char) or cont(string.digits, char) or char == "_") and #char > 0 do
-                word = word .. char
-                advance()
-            end
-            push(tokens, Token("nameRef", word, PositionRange(start, stop)))
-        else advance() end
+                push(tokens, Token("sub", subTokens, PositionRange(start, stop)))
+            else advance() end
+        end
+        return tokens
     end
-    push(tokens, Token("eof", nil, PositionRange(pos:copy(), pos:copy())))
-    return tokens
+    return main()
 end
 
-local function interpret(tokens)
-    local stack, vars, i, token = {}, {}, 0
-    local indent = 0
-    local function advance() i=i+1 token=tokens[i] end
+local function interpret(stack, tokens, name)
+    if not name then name = "main" end
+    if not stack then stack = {} end
+    local vars, token = {}
+    local i = 0
+    local function advance() i=i+1 token=tokens[i] if not token then token = Token("exit") end end
     advance()
+    local indent = 0
     local function main(kw)
         local err
         if not kw then kw = "<none>" end
-        --for __=1,indent do io.write(" ") end print(kw.." "..tostring(indent))
         indent=indent+1
         while true do
-            --for __=1,indent do io.write(" ") end for _, v in pairs(stack) do io.write("[",tostring(v), "] ") end print("("..tostring(#stack)..")")
+            if token.type == "exit" then break end
             if token.type == "keyword" then
                 if token.value == "if" then
-                    if stack[#stack] == 0 then
-                        pop(stack)
-                        local count = 1
-                        while count > 0 and token do
-                            advance()
-                            if token.type == "keyword" and cont(reqEnd, token.value) then count=count+1 end
-                            if token.value == "end" then count=count-1 end
-                        end
+                    advance()
+                    local condition = pop(stack)
+                    if condition ~= 0 then
+                        if token.type == "sub" then stack, err = interpret(stack, token.value, "sub") if err then return nil, err end
+                        else stack, err = interpret(stack, { token }, "sub") if err then return nil, err end end
                     end
                     advance()
                 end
                 if token.value == "repeat" then
                     advance()
-                    if stack[#stack].value > 0 then
-                        local amount = stack[#stack]
-                        pop(stack)
+                    local amount = pop(stack)
+                    if amount then if amount.value > 0 then
                         local before = i
                         for _ = 1, amount.value-1 do
-                            stack, err = main("repeat") if err then return nil, err end
-                            i = before token=tokens[i]
+                            if token.type == "sub" then stack, err = interpret(stack, token.value, "sub") if err then return nil, err end
+                            else stack, err = interpret(stack, { token }, "sub") if err then return nil, err end end
+                            i = before
                         end
-                    else
-                        pop(stack)
-                        local count = 1
-                        while count > 0 and token do
-                            if token.type == "keyword" and cont(reqEnd, token.value) then count=count+1 end
-                            if token.value == "end" then count=count-1 end
-                            advance()
-                        end
-                    end
+                    end end
+                    advance()
                 end
                 if token.value == "set" then
                     local value = pop(stack)
@@ -447,18 +516,17 @@ local function interpret(tokens)
                 end
                 if token.value == "end" then break end
             end
+            if token.type == "sub" then stack = main("sub") end
             if token.type == "number" then push(stack, Number(token.value)) advance() end
             if token.type == "name" then push(stack, Var(token.value)) advance() end
             if token.type == "nameRef" then if vars[token.value] then push(stack, vars[token.value]) advance() else
                 return nil, Error("name error", "name "..token.value.." not registered", token.pos:copy()) end end
             if token.type == "op" then stack, err = opFuncs[token.value](stack, token) if err then return nil, err end advance() end
-            if token.type == "eof" then break end
         end
         indent=indent-1
-        --for __=1,indent do io.write(" ") end print("end")
         return stack
     end
-    return main("main")
+    return main(name)
 end
 
 local function test()
@@ -468,14 +536,14 @@ local function test()
     local stack, tokens, err = {}
     tokens, err = lex("test.lo", text) if err then return nil, err end
     --for _, t in ipairs(tokens) do io.write(tostring(t), " ") end print()
-    stack, err = interpret(tokens) if err then return nil, err end
+    stack, err = interpret({}, tokens) if err then return nil, err end
     return stack
 end
 
 local function run(fn, text)
     local tokens, stack, err
     tokens, err = lex(fn, text) if err then print(err) return end
-    stack, err = interpret(tokens) if err then print(err) return end
+    stack, err = interpret({}, tokens) if err then print(err) return end
     return stack
 end
 
