@@ -311,6 +311,11 @@ opFuncs = {
         push(stack, Number(math.floor(a.value)))
         return stack
     end,
+    ["print"] = function(stack)
+        local a = pop(stack)
+        print(a)
+        return stack
+    end,
 }
 local symbols = { "+", "-", "*", "/", "**", "=", "<", ">", "<=", ">=", "#" }
 local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["end"] = "end", ["set"] = "set" }
