@@ -30,6 +30,14 @@ string.join = function(s, t)
     end
     return str
 end
+table.copy = function(t)
+    local newT = {}
+    for k, v in pairs(t) do
+        if type(v) == "table" then newT[k] = table.copy(v)
+        else newT[k] = v end
+    end
+    return newT
+end
 local function insertionSort(array)
     local len = #array
     for j = 2, len do
@@ -53,6 +61,7 @@ local cont = table.contains
 local contKey = table.containsKey
 local contStart = table.containsStart
 local contKeyStart = table.containsKeyStart
+local copy = table.copy
 
 local function Position(idx, ln, col, fn, text)
     return setmetatable(
@@ -397,7 +406,8 @@ opFuncs = {
     end,
 }
 local symbols = { "+", "-", "*", "/", "**", "=", "!", "!=", "<", ">", "<=", ">=", "#" }
-local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["set"] = "set", ["local"] = "local", ["macro"] = "macro" }
+local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["set"] = "set", ["local"] = "local",
+                   ["macro"] = "macro", }
 
 ---@param fn string
 ---@param text string
