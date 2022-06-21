@@ -190,7 +190,7 @@ opFuncs = {
     ["!"] = function(stack)
         local a = pop(stack)
         if not a then return stack end
-        push(stack, ~a)
+        if a.value == 0 then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     ["!="] = function(stack)
