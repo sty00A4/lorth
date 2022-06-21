@@ -196,6 +196,31 @@ opFuncs = {
         push(stack, a:copy())
         return stack
     end,
+    ["swap"] = function(stack)
+        local a = pop(stack)
+        local b = pop(stack)
+        push(stack, a:copy())
+        push(stack, b:copy())
+        return stack
+    end,
+    ["over"] = function(stack)
+        if not stack[1] then return stack end
+        local a = stack[1]:copy()
+        push(stack, a)
+        return stack
+    end,
+    ["max"] = function(stack)
+        local a = pop(stack)
+        local b = pop(stack)
+        if a.value > b.value then push(stack, a) else push(stack, b) end
+        return stack
+    end,
+    ["min"] = function(stack)
+        local a = pop(stack)
+        local b = pop(stack)
+        if a.value < b.value then push(stack, a) else push(stack, b) end
+        return stack
+    end,
     ["rev"] = function(stack)
         if #stack == 0 then return stack end
         for i = 1, #stack do
