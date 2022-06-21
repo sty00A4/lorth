@@ -597,7 +597,8 @@ if os.version then
     if os.version():sub(1,7) == "CraftOS" then
         local args = {...}
         if #args > 0 then
-            print(runfile(args[1]))
+            local stack, err = runfile(args[1]) if err then print(err) return end
+            for _, v in ipairs(stack) do io.write("[", tostring(v), "] ") end print()
         end
     end
 end
