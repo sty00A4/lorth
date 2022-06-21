@@ -101,6 +101,7 @@ local function Number(number)
                 __pow = function(s, o) return Number(s.value ^ o.value) end,
                 __idiv = function(s, o) return Number(s.value // o.value) end,
                 __unm = function(s) return Number(-s.value) end,
+                __bnot = function(s) if s.value == 0 then return Number(1) end return Number(0) end
             }
     )
 end
@@ -152,31 +153,42 @@ opFuncs = {
     ["="] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
-        if b == a then push(stack, 1) else push(stack, 0) end
+        if b == a then push(stack, Number(1)) else push(stack, Number(0)) end
+        return stack
+    end,
+    ["!"] = function(stack)
+        local a = pop(stack)
+        push(stack, ~a)
+        return stack
+    end,
+    ["!="] = function(stack)
+        local a = pop(stack)
+        local b = pop(stack)
+        if a ~= b then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     ["<"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
-        if b < a then push(stack, 1) else push(stack, 0) end
+        if b < a then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     [">"] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
-        if b > a then push(stack, 1) else push(stack, 0) end
+        if b > a then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     ["<="] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
-        if b <= a then push(stack, 1) else push(stack, 0) end
+        if b <= a then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     [">="] = function(stack)
         local a = pop(stack)
         local b = pop(stack)
-        if b >= a then push(stack, 1) else push(stack, 0) end
+        if b >= a then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     ["#"] = function(stack, token)
@@ -317,7 +329,7 @@ opFuncs = {
         return stack
     end,
 }
-local symbols = { "+", "-", "*", "/", "**", "=", "<", ">", "<=", ">=", "#" }
+local symbols = { "+", "-", "*", "/", "**", "=", "!", "!=", "<", ">", "<=", ">=", "#" }
 local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["end"] = "end", ["set"] = "set" }
 local reqEnd = { keywords["if"], keywords["repeat"], }
 
