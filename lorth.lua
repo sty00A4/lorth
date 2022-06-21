@@ -419,11 +419,27 @@ local function lex(fn, text)
             elseif cont(string.digits, char) then
                 local start, stop = pos:copy(), pos:copy()
                 local numStr = char
+                local numType = "d"
                 advance()
-                while (cont(string.digits, char) or char == ".") and #char > 0 do
+                if char == "x" then
+                    numType = char
                     numStr = numStr .. char
                     stop = pos:copy()
                     advance()
+                end
+                if numType == "d" then
+                    while (cont(string.digits, char) or char == ".") and #char > 0 do
+                        numStr = numStr .. char
+                        stop = pos:copy()
+                        advance()
+                    end
+                end
+                if numType == "x" then
+                    while (cont(string.digits, char) or cont(table.sub(string.letters, 1, 6), char) or char == ".") and #char > 0 do
+                        numStr = numStr .. char
+                        stop = pos:copy()
+                        advance()
+                    end
                 end
                 push(tokens, Token("number", tonumber(numStr), PositionRange(start, stop)))
             elseif cont(string.letters, char) or char == "_" then
