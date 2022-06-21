@@ -281,6 +281,7 @@ opFuncs = {
         return stack
     end,
 }
+local symbols = { "+", "-", "*", "/", "**", "=", "<", ">", "<=", ">=", "#" }
 local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["end"] = "end", ["set"] = "set" }
 local reqEnd = { keywords["if"], keywords["repeat"], }
 
@@ -306,25 +307,6 @@ local function lex(fn, text)
                 advance()
             end
             push(tokens, Token("number", tonumber(numStr), PositionRange(start, stop)))
-        elseif contKeyStart(opFuncs, char) then
-            local start, stop = pos:copy(), pos:copy()
-            local str = char
-            advance()
-            while contKeyStart(opFuncs, str..char) and #char > 0 do
-                str = str .. char
-                advance()
-            end
-            if contKey(opFuncs, str) then push(tokens, Token("op", str, PositionRange(start, stop)))
-            else push(tokens, Token("name", str, PositionRange(start, stop))) end
-        elseif contStart(keywords, char) then
-            local start, stop = pos:copy(), pos:copy()
-            local str = char
-            advance()
-            while contStart(keywords, str..char) and #char > 0 do
-                str = str .. char
-                advance()
-            end
-            push(tokens, Token("keyword", str, PositionRange(start, stop)))
         elseif cont(string.letters, char) or char == "_" then
             local start, stop = pos:copy(), pos:copy()
             local word = char
@@ -334,7 +316,17 @@ local function lex(fn, text)
                 advance()
             end
             if contKey(opFuncs, word) then push(tokens, Token("op", word, PositionRange(start, stop)))
+            elseif cont(keywords, word) then push(tokens, Token("keyword", word, PositionRange(start, stop)))
             else push(tokens, Token("name", word, PositionRange(start, stop))) end
+        elseif contStart(symbols, char) then
+            local start, stop = pos:copy(), pos:copy()
+            local symbol = char
+            advance()
+            while contStart(symbols, symbol .. char) and #char > 0 do
+                symbol = symbol .. char
+                advance()
+            end
+            push(tokens, Token("op", symbol, PositionRange(start, stop)))
         elseif char == "@" then
             local start, stop = pos:copy(), pos:copy()
             advance()
@@ -427,7 +419,7 @@ local function test()
     file:close()
     local stack, tokens, err = {}
     tokens, err = lex("test.lo", text) if err then return nil, err end
-    for _, t in ipairs(tokens) do io.write(tostring(t), " ") end print()
+    --for _, t in ipairs(tokens) do io.write(tostring(t), " ") end print()
     stack, err = interpret(tokens) if err then return nil, err end
     return stack
 end
