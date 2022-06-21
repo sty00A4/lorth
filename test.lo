@@ -1,2 +1,1 @@
-1 set num
-num
+"Hello World!" rev len repeat writeChar

@@ -384,6 +384,16 @@ opFuncs = {
         push(stack, Number(number))
         return stack
     end,
+    ["write"] = function(stack)
+        local a = pop(stack)
+        io.write(a)
+        return stack
+    end,
+    ["writeChar"] = function(stack)
+        local a = pop(stack)
+        io.write(string.char(a.value))
+        return stack
+    end,
 }
 local symbols = { "+", "-", "*", "/", "**", "=", "!", "!=", "<", ">", "<=", ">=", "#" }
 local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["set"] = "set", ["macro"] = "macro" }
@@ -406,6 +416,18 @@ local function lex(fn, text)
             if char == " " or char == "\t" or char == "\n" then advance()
             elseif char == stopChar then break
             elseif char == ";" then while char ~= "\n" and #char > 0 do advance() end advance()
+            elseif char == "'" then
+                advance()
+                push(tokens, Token("char", char, PositionRange(pos:copy(), pos:copy())))
+                advance()
+            elseif char == '"' then
+                local start = pos:copy()
+                advance()
+                local str = ""
+                while char ~= '"' and #char > 0 do str = str .. char advance() end
+                advance()
+                local stop = pos:copy()
+                push(tokens, Token("string", str, PositionRange(start, stop)))
             elseif cont(string.digits, char) then
                 local start, stop = pos:copy(), pos:copy()
                 local numStr = char
@@ -528,6 +550,11 @@ local function interpret(stack, tokens, vars, macros, name)
             end
             if token.type == "sub" then stack = interpret(stack, token.value, vars, macros, "sub") advance() end
             if token.type == "number" then push(stack, Number(token.value)) advance() end
+            if token.type == "char" then push(stack, Number(string.byte(token.value))) advance() end
+            if token.type == "string" then
+                for idx = 1, #token.value do push(stack, Number(string.byte(token.value:sub(idx,idx)))) end
+                advance()
+            end
             if token.type == "name" then
                 if macros[token.value] then
                     if type(macros[token.value].value) == "table" then interpret(stack, macros[token.value].value, vars, macros, token.value)
