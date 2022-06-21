@@ -87,7 +87,7 @@ end
 local function Number(number)
     if number == math.floor(number) then number = math.floor(number) end
     return setmetatable(
-            { value = number },
+            { value = number, copy = function(s) return Number(s.value) end },
             {
                 __name = "number", __tostring = function(s) return tostring(s.value) end,
                 __eq = function(s, o) return s.value == o.value end,
@@ -106,7 +106,7 @@ local function Number(number)
 end
 local function Var(name)
     return setmetatable(
-            { name = name },
+            { name = name, copy = function(s) return Var(s.name) end },
             { __name = "var" }
     )
 end
@@ -188,6 +188,12 @@ opFuncs = {
         local a = pop(stack)
         if not a then return stack end
         push(stack, 1, a)
+        return stack
+    end,
+    ["dup"] = function(stack)
+        local a = pop(stack)
+        push(stack, a)
+        push(stack, a:copy())
         return stack
     end,
     ["rev"] = function(stack)
