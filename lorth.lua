@@ -487,11 +487,12 @@ local function lex(fn, text)
     return main()
 end
 
-local function interpret(stack, tokens, name)
+local function interpret(stack, tokens, vars, macros, name)
     if not name then name = "main" end
     if not stack then stack = {} end
-    local vars, macros, token = {}, {}
-    local i = 0
+    if not vars then vars = {} end
+    if not macros then macros = {} end
+    local i, token = 0
     local function advance() i=i+1 token=tokens[i] if not token then token = Token("exit") end end
     advance()
     local indent = 0
@@ -505,11 +506,11 @@ local function interpret(stack, tokens, name)
             if token.type == "keyword" then
                 if token.value == "if" then
                     advance()
-                    local condition = pop(stack)
-                    if condition ~= 0 then
-                        if token.type == "sub" then stack, err = interpret(stack, token.value, "sub") if err then return nil, err end
-                        else stack, err = interpret(stack, { token }, "sub") if err then return nil, err end end
-                    end
+                    local condition = stack[#stack]
+                    if condition ~= nil then if condition ~= Number(0) then
+                        if token.type == "sub" then stack, err = interpret(stack, token.value, vars, macros, "sub") if err then return nil, err end
+                        else stack, err = interpret(stack, { token }, vars, macros, "sub") if err then return nil, err end end
+                    end end
                     advance()
                 end
                 if token.value == "repeat" then
@@ -517,9 +518,9 @@ local function interpret(stack, tokens, name)
                     local amount = pop(stack)
                     if amount then if amount.value > 0 then
                         local before = i
-                        for _ = 1, amount.value-1 do
-                            if token.type == "sub" then stack, err = interpret(stack, token.value, "sub") if err then return nil, err end
-                            else stack, err = interpret(stack, { token }, "sub") if err then return nil, err end end
+                        for _ = 1, amount.value do
+                            if token.type == "sub" then stack, err = interpret(stack, token.value, vars, macros, "sub") if err then return nil, err end
+                            else stack, err = interpret(stack, { token }, vars, macros, "sub") if err then return nil, err end end
                             i = before
                         end
                     end end
@@ -544,12 +545,12 @@ local function interpret(stack, tokens, name)
                 end
                 if token.value == "end" then break end
             end
-            if token.type == "sub" then stack = main("sub") advance() end
+            if token.type == "sub" then stack = interpret(stack, token.value, vars, macros, "sub") advance() end
             if token.type == "number" then push(stack, Number(token.value)) advance() end
             if token.type == "name" then
                 if macros[token.value] then
-                    if type(macros[token.value].value) == "table" then interpret(stack, macros[token.value].value, token.value)
-                    else interpret(stack, { macros[token.value]:copy() }, token.value) end
+                    if type(macros[token.value].value) == "table" then interpret(stack, macros[token.value].value, vars, macros, token.value)
+                    else interpret(stack, { macros[token.value]:copy() }, vars, macros, token.value) end
                 else push(stack, Var(token.value)) end
                 advance()
             end
