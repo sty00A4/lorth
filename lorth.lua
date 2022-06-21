@@ -503,13 +503,12 @@ end
 ---@param tokens table
 ---@param vars table
 ---@param macros table
----@param name string
-local function interpret(stack, tokens, vars, macros, name)
-    if not name then name = "main" end
+---@param locals table
+local function interpret(tokens, stack, vars, locals, macros)
     if not stack then stack = {} end
     if not vars then vars = {} end
     if not macros then macros = {} end
-    local locals = {}
+    if not locals then locals = {} end
     local i, token = 0
     local function advance() i=i+1 token=tokens[i] if not token then token = Token("exit") end end
     advance()
@@ -524,8 +523,8 @@ local function interpret(stack, tokens, vars, macros, name)
                 advance()
                 local condition = stack[#stack]
                 if condition ~= nil then if condition ~= Number(0) then
-                    if token.type == "sub" then stack, err = interpret(stack, token.value, vars, macros, "sub") if err then return nil, err end
-                    else stack, err = interpret(stack, { token }, vars, macros, "sub") if err then return nil, err end end
+                    if token.type == "sub" then stack, err = interpret(token.value, stack, vars, copy(locals), macros) if err then return nil, err end
+                    else stack, err = interpret({ token }, stack, vars, copy(locals), macros) if err then return nil, err end end
                 end end
                 advance()
             end
@@ -535,8 +534,8 @@ local function interpret(stack, tokens, vars, macros, name)
                 if amount then if amount.value > 0 then
                     local before = i
                     for _ = 1, amount.value do
-                        if token.type == "sub" then stack, err = interpret(stack, token.value, vars, macros, "sub") if err then return nil, err end
-                        else stack, err = interpret(stack, { token }, vars, macros, "sub") if err then return nil, err end end
+                        if token.type == "sub" then stack, err = interpret(token.value, stack, vars, copy(locals), macros) if err then return nil, err end
+                        else stack, err = interpret({ token }, stack, vars, copy(locals), macros) if err then return nil, err end end
                         i = before
                     end
                 end end
@@ -565,7 +564,7 @@ local function interpret(stack, tokens, vars, macros, name)
                 advance()
             end
         end
-        if token.type == "sub" then stack = interpret(stack, token.value, vars, macros, "sub") advance() end
+        if token.type == "sub" then stack = interpret(token.value, stack, vars, copy(locals), macros) advance() end
         if token.type == "number" then push(stack, Number(token.value)) advance() end
         if token.type == "char" then push(stack, Number(string.byte(token.value))) advance() end
         if token.type == "string" then
@@ -574,8 +573,8 @@ local function interpret(stack, tokens, vars, macros, name)
         end
         if token.type == "name" then
             if macros[token.value] then
-                if type(macros[token.value].value) == "table" then interpret(stack, macros[token.value].value, vars, macros, token.value)
-                else interpret(stack, { macros[token.value]:copy() }, vars, macros, token.value) end
+                if type(macros[token.value].value) == "table" then interpret(macros[token.value].value, stack, vars, copy(locals), macros)
+                else interpret({ macros[token.value]:copy() }, stack, vars, copy(locals), macros) end
             else
                 if vars[token.value] then push(stack, vars[token.value]:copy())
                 else return nil, Error("name error", "name not registered in the variables", token.pos:copy()) end
@@ -597,14 +596,14 @@ local function test()
     local stack, tokens, err = {}
     tokens, err = lex("test.lo", text) if err then return nil, err end
     --for _, t in ipairs(tokens) do io.write(tostring(t), " ") end print()
-    stack, err = interpret({}, tokens) if err then return nil, err end
+    stack, err = interpret(tokens) if err then return nil, err end
     return stack
 end
 
 local function run(fn, text)
     local tokens, stack, err
     tokens, err = lex(fn, text) if err then print(err) return end
-    stack, err = interpret({}, tokens) if err then print(err) return end
+    stack, err = interpret(tokens) if err then print(err) return end
     return stack
 end
 
