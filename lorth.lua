@@ -401,6 +401,8 @@ opFuncs = {
 local symbols = { "+", "-", "*", "/", "**", "=", "!", "!=", "<", ">", "<=", ">=", "#" }
 local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["end"] = "end", ["set"] = "set", ["macro"] = "macro" }
 
+---@param fn string
+---@param text string
 local function lex(fn, text)
     local pos, char = Position(0, 1, 0, fn, text)
     local function update() char = text:sub(pos.idx,pos.idx) end
@@ -487,6 +489,11 @@ local function lex(fn, text)
     return main()
 end
 
+---@param stack table
+---@param tokens table
+---@param vars table
+---@param macros table
+---@param name string
 local function interpret(stack, tokens, vars, macros, name)
     if not name then name = "main" end
     if not stack then stack = {} end
@@ -588,4 +595,4 @@ local function runfile(fn)
     return run(fn, text)
 end
 
-return { run = run, runfile = runfile, test = test }
+return { run = run, runfile = runfile, test = test, lex = lex, interpret = interpret }
