@@ -391,6 +391,12 @@ opFuncs = {
         print(a)
         return stack
     end,
+    ["input"] = function(stack)
+        local number = tonumber(io.read("*n"))
+        if not number then number = 0 end
+        push(stack, Number(number))
+        return stack
+    end,
 }
 local symbols = { "+", "-", "*", "/", "**", "=", "!", "!=", "<", ">", "<=", ">=", "#" }
 local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["end"] = "end", ["set"] = "set", ["macro"] = "macro" }
