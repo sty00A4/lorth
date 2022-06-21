@@ -1,2 +1,3 @@
 local lorth = require("lorth")
-print(lorth.test())
+local stack, err = lorth.test() if err then print(err) return end
+for _, v in ipairs(stack) do io.write("[", tostring(v), "] ") end print()
