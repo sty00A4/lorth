@@ -417,6 +417,7 @@ local function lex(fn, text)
         while #char > 0 do
             if char == " " or char == "\t" or char == "\n" then advance()
             elseif char == stopChar then break
+            elseif char == ";" then while char ~= "\n" and #char > 0 do advance() end advance()
             elseif cont(string.digits, char) then
                 local start, stop = pos:copy(), pos:copy()
                 local numStr = char

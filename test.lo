@@ -1,1 +1,5 @@
-1 !
+macro double ( len repeat ( rot 2 * ) )
+; create range
+2   8 repeat (dup 2 *)
+; times 8 stack
+3 repeat double
