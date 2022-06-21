@@ -111,7 +111,6 @@ local function Number(number)
                 __div = function(s, o) return Number(s.value / o.value) end,
                 __mod = function(s, o) return Number(s.value % o.value) end,
                 __pow = function(s, o) return Number(s.value ^ o.value) end,
-                __idiv = function(s, o) return Number(s.value // o.value) end,
                 __unm = function(s) return Number(-s.value) end,
                 __bnot = function(s) if s.value == 0 then return Number(1) end return Number(0) end
             }
