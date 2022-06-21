@@ -593,5 +593,13 @@ local function runfile(fn)
     file:close()
     return run(fn, text)
 end
+if os.version then
+    if os.version():sub(1,7) == "CraftOS" then
+        local args = {...}
+        if #args > 0 then
+            print(runfile(args[1]))
+        end
+    end
+end
 
 return { run = run, runfile = runfile, test = test, lex = lex, interpret = interpret }
