@@ -1,1 +1,7 @@
-"Hello World!" rev len repeat writeChar
+macro say (
+    local x
+    len x - repeat shift
+    rev len repeat writeChar
+)
+1 2 3
+"hello there" 11 say

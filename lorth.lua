@@ -391,12 +391,13 @@ opFuncs = {
     end,
     ["writeChar"] = function(stack)
         local a = pop(stack)
+        if not a then return stack end
         io.write(string.char(a.value))
         return stack
     end,
 }
 local symbols = { "+", "-", "*", "/", "**", "=", "!", "!=", "<", ">", "<=", ">=", "#" }
-local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["set"] = "set", ["macro"] = "macro" }
+local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["set"] = "set", ["local"] = "local", ["macro"] = "macro" }
 
 ---@param fn string
 ---@param text string
@@ -498,78 +499,85 @@ local function interpret(stack, tokens, vars, macros, name)
     if not stack then stack = {} end
     if not vars then vars = {} end
     if not macros then macros = {} end
+    local locals = {}
     local i, token = 0
     local function advance() i=i+1 token=tokens[i] if not token then token = Token("exit") end end
     advance()
     local indent = 0
-    local function main(kw)
-        local err
-        if not kw then kw = "<none>" end
-        indent=indent+1
-        while true do
-            if token.type == "exit" then break end
-            if token.type == "op" then stack, err = opFuncs[token.value](stack, token) if err then return nil, err end advance() end
-            if token.type == "keyword" then
-                if token.value == keywords["if"] then
-                    advance()
-                    local condition = stack[#stack]
-                    if condition ~= nil then if condition ~= Number(0) then
-                        if token.type == "sub" then stack, err = interpret(stack, token.value, vars, macros, "sub") if err then return nil, err end
-                        else stack, err = interpret(stack, { token }, vars, macros, "sub") if err then return nil, err end end
-                    end end
-                    advance()
-                end
-                if token.value == keywords["repeat"] then
-                    advance()
-                    local amount = pop(stack)
-                    if amount then if amount.value > 0 then
-                        local before = i
-                        for _ = 1, amount.value do
-                            if token.type == "sub" then stack, err = interpret(stack, token.value, vars, macros, "sub") if err then return nil, err end
-                            else stack, err = interpret(stack, { token }, vars, macros, "sub") if err then return nil, err end end
-                            i = before
-                        end
-                    end end
-                    advance()
-                end
-                if token.value == keywords["macro"] then
-                    advance()
-                    if token.type ~= "name" then return nil, Error("syntax error", "expected name", token.pos) end
-                    local macroName = token.value
-                    advance()
-                    local proc = token:copy()
-                    advance()
-                    macros[macroName] = proc
-                end
-                if token.value == keywords["set"] then
-                    advance()
-                    if token.type ~= "name" then return nil, Error("syntax error", "expected name", token.po:copy()) end
-                    vars[token.value] = pop(stack)
-                    advance()
-                end
-            end
-            if token.type == "sub" then stack = interpret(stack, token.value, vars, macros, "sub") advance() end
-            if token.type == "number" then push(stack, Number(token.value)) advance() end
-            if token.type == "char" then push(stack, Number(string.byte(token.value))) advance() end
-            if token.type == "string" then
-                for idx = 1, #token.value do push(stack, Number(string.byte(token.value:sub(idx,idx)))) end
+    local err
+    indent=indent+1
+    while true do
+        if token.type == "exit" then break end
+        if token.type == "op" then stack, err = opFuncs[token.value](stack, token) if err then return nil, err end advance() end
+        if token.type == "keyword" then
+            if token.value == keywords["if"] then
+                advance()
+                local condition = stack[#stack]
+                if condition ~= nil then if condition ~= Number(0) then
+                    if token.type == "sub" then stack, err = interpret(stack, token.value, vars, macros, "sub") if err then return nil, err end
+                    else stack, err = interpret(stack, { token }, vars, macros, "sub") if err then return nil, err end end
+                end end
                 advance()
             end
-            if token.type == "name" then
-                if macros[token.value] then
-                    if type(macros[token.value].value) == "table" then interpret(stack, macros[token.value].value, vars, macros, token.value)
-                    else interpret(stack, { macros[token.value]:copy() }, vars, macros, token.value) end
-                else
-                    if vars[token.value] then push(stack, vars[token.value]:copy())
-                    else return nil, Error("name error", "name not registered in the variables", token.pos:copy()) end
-                end
+            if token.value == keywords["repeat"] then
+                advance()
+                local amount = pop(stack)
+                if amount then if amount.value > 0 then
+                    local before = i
+                    for _ = 1, amount.value do
+                        if token.type == "sub" then stack, err = interpret(stack, token.value, vars, macros, "sub") if err then return nil, err end
+                        else stack, err = interpret(stack, { token }, vars, macros, "sub") if err then return nil, err end end
+                        i = before
+                    end
+                end end
+                advance()
+            end
+            if token.value == keywords["macro"] then
+                advance()
+                if token.type ~= "name" then return nil, Error("syntax error", "expected name", token.pos) end
+                local macroName = token.value
+                advance()
+                local proc = token:copy()
+                advance()
+                macros[macroName] = proc
+            end
+            if token.value == keywords["local"] then
+                advance()
+                if token.type ~= "name" then return nil, Error("syntax error", "expected name", token.po:copy()) end
+                vars[token.value] = pop(stack)
+                push(locals, token.value)
+                advance()
+            end
+            if token.value == keywords["set"] then
+                advance()
+                if token.type ~= "name" then return nil, Error("syntax error", "expected name", token.po:copy()) end
+                vars[token.value] = pop(stack)
                 advance()
             end
         end
-        indent=indent-1
-        return stack
+        if token.type == "sub" then stack = interpret(stack, token.value, vars, macros, "sub") advance() end
+        if token.type == "number" then push(stack, Number(token.value)) advance() end
+        if token.type == "char" then push(stack, Number(string.byte(token.value))) advance() end
+        if token.type == "string" then
+            for idx = 1, #token.value do push(stack, Number(string.byte(token.value:sub(idx,idx)))) end
+            advance()
+        end
+        if token.type == "name" then
+            if macros[token.value] then
+                if type(macros[token.value].value) == "table" then interpret(stack, macros[token.value].value, vars, macros, token.value)
+                else interpret(stack, { macros[token.value]:copy() }, vars, macros, token.value) end
+            else
+                if vars[token.value] then push(stack, vars[token.value]:copy())
+                else return nil, Error("name error", "name not registered in the variables", token.pos:copy()) end
+            end
+            advance()
+        end
     end
-    return main(name)
+    indent=indent-1
+    for _,v in pairs(locals) do
+        vars[v] = nil
+    end
+    return stack
 end
 
 local function test()
