@@ -487,6 +487,10 @@ opFuncs = {
         push(stack, a:tochar())
         return stack
     end,
+    ["clock"] = function(stack)
+        push(stack, Number(os.clock()))
+        return stack
+    end
 }
 local symbols = { "+", "-", "*", "/", "**", "=", "!", "!=", "<", ">", "<=", ">=", "#" }
 local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["set"] = "set", ["local"] = "local",
