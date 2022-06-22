@@ -112,7 +112,8 @@ Number = function(number)
             { value = number, copy = function(s) return Number(s.value) end,
               tonumber = function(s) return s:copy() end,
               tostring = function(s) return String(tostring(s.value)) end,
-              tochar = function(s) return Char(tostring(s.value):sub(1,1)) end
+              tochar = function(s) return Char(string.char(s.value)) end,
+              rawstr = function(s) return tostring(s) end
             },
             {
                 __name = "number", __tostring = function(s) return tostring(s.value) end,
@@ -140,7 +141,8 @@ String = function(str)
                   return Number(num)
               end,
               tostring = function(s) return s:copy() end,
-              tochar = function(s) return Char(s.value:sub(1,1)) end
+              tochar = function(s) return Char(s.value:sub(1,1)) end,
+              rawstr = function(s) return '"'..tostring(s)..'"' end
             },
             {
                 __name = "string", __tostring = function(s) return tostring(s.value) end,
@@ -164,7 +166,8 @@ Char = function(char)
             { value = char, copy = function(s) return Char(s.value) end,
               tonumber = function(s) return Number(string.byte(s.value)) end,
               tostring = function(s) return String(s.value) end,
-              tochar = function(s) return s:copy() end
+              tochar = function(s) return s:copy() end,
+              rawstr = function(s) return "'"..tostring(s) end
             },
             {
                 __name = "char", __tostring = function(s) return tostring(s.value) end,
@@ -466,6 +469,24 @@ opFuncs = {
         push(stack, b .. a)
         return stack
     end,
+    ["number"] = function(stack)
+        local a = pop(stack)
+        if not a then return stack end
+        push(stack, a:tonumber())
+        return stack
+    end,
+    ["string"] = function(stack)
+        local a = pop(stack)
+        if not a then return stack end
+        push(stack, a:tostring())
+        return stack
+    end,
+    ["char"] = function(stack)
+        local a = pop(stack)
+        if not a then return stack end
+        push(stack, a:tochar())
+        return stack
+    end,
 }
 local symbols = { "+", "-", "*", "/", "**", "=", "!", "!=", "<", ">", "<=", ">=", "#" }
 local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["set"] = "set", ["local"] = "local",
@@ -640,10 +661,7 @@ local function interpret(tokens, stack, vars, locals, macros)
         if token.type == "sub" then stack = interpret(token.value, stack, vars, copy(locals), macros) advance() end
         if token.type == "number" then push(stack, Number(token.value)) advance() end
         if token.type == "char" then push(stack, Char(token.value)) advance() end
-        if token.type == "string" then
-            push(stack, String(token.value))
-            advance()
-        end
+        if token.type == "string" then push(stack, String(token.value)) advance() end
         if token.type == "name" then
             if macros[token.value] then
                 if type(macros[token.value].value) == "table" then interpret(macros[token.value].value, stack, vars, copy(locals), macros)
