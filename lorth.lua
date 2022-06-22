@@ -319,6 +319,18 @@ opFuncs = {
         if stack[a.value+1] then push(stack, stack[a.value+1]) else return nil, Error("index error", "index out of range", token.pos) end
         return stack
     end,
+    ["or"] = function(stack)
+        local a = pop(stack) if not a then return stack end a = a:tonumber()
+        local b = pop(stack) if not b then return stack end b = b:tonumber()
+        if a.value ~= 0 or b.value ~= 0 then push(stack, Number(1)) else push(stack, Number(0)) end
+        return stack
+    end,
+    ["and"] = function(stack)
+        local a = pop(stack) if not a then return stack end a = a:tonumber()
+        local b = pop(stack) if not b then return stack end b = b:tonumber()
+        if a.value ~= 0 and b.value ~= 0 then push(stack, Number(1)) else push(stack, Number(0)) end
+        return stack
+    end,
     ["rot"] = function(stack)
         local a = pop(stack, #stack-2)
         if not a then return stack end
@@ -350,6 +362,11 @@ opFuncs = {
     ["pick"] = function(stack)
         local a = stack[1]:copy()
         if not a then return stack end
+        push(stack, a)
+        return stack
+    end,
+    ["roll"] = function(stack)
+        local a = pop(stack, 1)
         push(stack, a)
         return stack
     end,
