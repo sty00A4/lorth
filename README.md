@@ -41,6 +41,7 @@ if you just put in a `number` or `name`, it'll be put on the stack
 | `prod`    | `a b c -> d`                | multiplies all the stack values                               |
 | `range`   | `a b -> ` value dependent   | puts every value from `a` to `b` on the stack                 |
 | `print`   | `a b c -> a b`              | prints the top stack value to the console and pops it         |
+| `write`   | `a b c -> a b`              | writes the top stack value to the console and pops it         |
 | `input`   | `a -> a b`                  | takes user input and puts it at the top (`0` if input is NaN) |
 | `rev`     | `a b c d -> d c b a`        | reverses the stack values                                     |
 | `max`     | `a b -> c`                  | pops the lower value and keeps the higher value of a and b    |
@@ -48,6 +49,10 @@ if you just put in a `number` or `name`, it'll be put on the stack
 | `flr`     | `a -> b`                    | pops `a` and puts rounded down `a` on the stack               |
 | `ceil`    | `a -> b`                    | pops `a` and puts rounded up `a` on the stack                 |
 | `len`     | `a -> a b`                  | puts the stack size as a number on the stack                  |
+| `con`     | `a b -> c`                  | concatenates a with b and puts the string on the stack        |
+| `number`  | `a -> b`                    | casts the top stack value to a number                         |
+| `string`  | `a -> b`                    | casts the top stack value to a string                         |
+| `char`    | `a -> b`                    | casts the top stack value to a character                      |
 
 | keyword  | description                                                                                                     |
 |----------|-----------------------------------------------------------------------------------------------------------------|
