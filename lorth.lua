@@ -135,13 +135,13 @@ String = function(str)
             { value = str, copy = function(s) return String(s.value) end,
               tonumber = function(s)
                   local num = 0
-                  for i = 1, #s do num = num + string.byte(s:sub(i,i)) end
+                  for i = 1, #s.value do num = num + string.byte(s.value:sub(i,i)) end
                   return Number(num)
               end,
               tostring = function(s) return s:copy() end
             },
             {
-                __name = "string", __tostring = function(s) return '"'..tostring(s.value)..'"' end,
+                __name = "string", __tostring = function(s) return tostring(s.value) end,
                 __eq = function(s, o) return s.value == o.value end,
                 __le = function(s, o) return s:tonumber().value <= o:tonumber().value end,
                 __lt = function(s, o) return s:tonumber().value < o:tonumber().value end,
@@ -416,6 +416,7 @@ opFuncs = {
     end,
     ["print"] = function(stack)
         local a = pop(stack)
+        if not a then return stack end
         print(a)
         return stack
     end,
@@ -427,7 +428,8 @@ opFuncs = {
     end,
     ["write"] = function(stack)
         local a = pop(stack)
-        io.write(a)
+        if not a then return stack end
+        io.write(tostring(a))
         return stack
     end,
     ["con"] = function(stack)
@@ -469,7 +471,16 @@ local function lex(fn, text)
                 local start = pos:copy()
                 advance()
                 local str = ""
-                while char ~= '"' and #char > 0 do str = str .. char advance() end
+                while char ~= '"' and #char > 0 do
+                    if char == "\\" then
+                        advance()
+                        if char == "n" then str = str .. "\n"
+                        elseif char == "t" then str = str .. "\t"
+                        elseif char == "r" then str = str .. "\r"
+                        else str = str .. char end
+                        advance()
+                    else str = str .. char advance() end
+                end
                 advance()
                 local stop = pos:copy()
                 push(tokens, Token("string", str, PositionRange(start, stop)))
@@ -565,6 +576,8 @@ local function interpret(tokens, stack, vars, locals, macros)
             if token.value == keywords["repeat"] then
                 advance()
                 local amount = pop(stack)
+                amount = amount:tonumber()
+                amount.value = math.floor(amount.value)
                 if amount then if amount.value > 0 then
                     local before = i
                     for _ = 1, amount.value do
