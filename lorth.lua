@@ -714,4 +714,4 @@ if os.version then
     end
 end
 
-return { run = run, runfile = runfile, test = test, lex = lex, interpret = interpret }
+return { run = run, runfile = runfile, test = test, opFuncs = opFuncs, lex = lex, interpret = interpret }
