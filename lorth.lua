@@ -63,6 +63,11 @@ local contStart = table.containsStart
 local contKeyStart = table.containsKeyStart
 local copy = table.copy
 
+---@param idx number
+---@param ln number
+---@param col number
+---@param fn string
+---@param text string
 local function Position(idx, ln, col, fn, text)
     return setmetatable(
             {
@@ -72,6 +77,8 @@ local function Position(idx, ln, col, fn, text)
             { __name = "position" }
     )
 end
+---@param start number
+---@param stop number
 local function PositionRange(start, stop)
     return setmetatable(
             {
@@ -81,6 +88,8 @@ local function PositionRange(start, stop)
             { __name = "positionRange" }
     )
 end
+---@param type_ string
+---@param pos table
 local function Token(type_, value, pos)
     return setmetatable(
             { type = type_, value = value, pos = pos, copy = function(s) return Token(s.type, s.value) end },
@@ -95,6 +104,9 @@ local function Token(type_, value, pos)
             end }
     )
 end
+---@param type_ string
+---@param details string
+---@param pos table
 local function Error(type_, details, pos)
     return setmetatable(
             { type = type_, details = details, pos = pos },
@@ -106,6 +118,7 @@ local function Error(type_, details, pos)
 end
 
 local Number, String, Char, Macro
+---@param number number
 Number = function(number)
     if number == math.floor(number) then number = math.floor(number) end
     return setmetatable(
@@ -132,6 +145,7 @@ Number = function(number)
             }
     )
 end
+---@param str string
 String = function(str)
     return setmetatable(
             { value = str, copy = function(s) return String(s.value) end,
@@ -161,6 +175,7 @@ String = function(str)
             }
     )
 end
+---@param char string
 Char = function(char)
     return setmetatable(
             { value = char, copy = function(s) return Char(s.value) end,
@@ -186,6 +201,7 @@ Char = function(char)
             }
     )
 end
+---@param proc table
 Macro = function(proc)
     return setmetatable(
             { proc = proc, copy = function(s) return Macro(s.proc) end },
@@ -695,6 +711,8 @@ local function test()
     return stack
 end
 
+---@param fn string
+---@param text string
 local function run(fn, text)
     local tokens, stack, err
     tokens, err = lex(fn, text) if err then print(err) return end
@@ -702,6 +720,7 @@ local function run(fn, text)
     return stack
 end
 
+---@param fn string
 local function runfile(fn)
     local file = io.open(fn, "r")
     local text = file:read("*a")
