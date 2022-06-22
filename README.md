@@ -4,13 +4,13 @@ A stack based programming language written in lua
 ---
 ## Syntax
 
-| type                 | examples                              |
-|----------------------|---------------------------------------|
-| number               | `1`,`2`,`3`, ...                      |
-| name                 | `var`, `age`, ...                     |
-| keyword              | `if`, `repeat`, `reg`, `set`, `macro` |
-| operation            | `+`, `-`, `dup`, ...                  |
-| sub                  | `( ... )`                             |
+| type                 | examples                                |
+|----------------------|-----------------------------------------|
+| number               | `1`,`2`,`3`, ...                        |
+| name                 | `var`, `age`, ...                       |
+| keyword              | `if`, `repeat`, `local`, `set`, `macro` |
+| operation            | `+`, `-`, `dup`, ...                    |
+| sub                  | `( ... )`                               |
 
 ## Interpreter
 if you just put in a `number` or `name`, it'll be put on the stack
