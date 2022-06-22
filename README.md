@@ -54,5 +54,6 @@ if you just put in a `number` or `name`, it'll be put on the stack
 | `if`     | executes following token if the top stack value isn't `0` and pops the top stack value                          |
 | `repeat` | executes following token top stack value's times and pops the top stack value                                   |
 | `set`    | sets the following name if registered in variables to the top stack value and pops the value of the stack       |
+| `local`  | sets the following name if registered in locals to the top stack value and pops the value of the stack          |
 | `macro`  | registers 1st following name with the second following token in the macros                                      |
 
