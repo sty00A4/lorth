@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="33409991-aa7b-4767-a1fd-32d8cb5a59cc" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2AsyLOXRzYHKj7tqWbCx3V2uNP8" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="RunManager">
+    <configuration name="test" type="lua.app" factoryName="Lua Application">
+      <option name="program" value="lua.exe" />
+      <option name="file" value="test.lua" />
+      <option name="workingDir" value="C:\Users\Vincent Reuter\PycharmProjects\lorth" />
+      <option name="debuggerType" value="2" />
+      <option name="params" value="" />
+      <option name="charset" value="UTF-8" />
+      <option name="showConsole" value="true" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="33409991-aa7b-4767-a1fd-32d8cb5a59cc" name="Changes" comment="" />
+      <created>1655812534642</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1655812534642</updated>
+    </task>
+    <task id="LOCAL-00001" summary="hex number implementaion">
+      <created>1655813470003</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1655813470004</updated>
+    </task>
+    <task id="LOCAL-00002" summary="if keyword fix, vars and macros between interpret calls">
+      <created>1655814603672</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1655814603672</updated>
+    </task>
+    <task id="LOCAL-00003" summary="param type hint">
+      <created>1655814805871</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1655814805871</updated>
+    </task>
+    <task id="LOCAL-00004" summary="removed idiv">
+      <created>1655814975713</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1655814975713</updated>
+    </task>
+    <task id="LOCAL-00005" summary="refactored &quot;!&quot; op">
+      <created>1655815165408</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1655815165408</updated>
+    </task>
+    <task id="LOCAL-00006" summary="computercraft feature">
+      <created>1655815611772</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1655815611772</updated>
+    </task>
+    <task id="LOCAL-00007" summary="computercraft feature">
+      <created>1655815771053</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1655815771053</updated>
+    </task>
+    <task id="LOCAL-00008" summary="local variable implementation">
+      <created>1655841709119</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1655841709119</updated>
+    </task>
+    <task id="LOCAL-00009" summary="copy function">
+      <created>1655842404542</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1655842404542</updated>
+    </task>
+    <task id="LOCAL-00010" summary="variable refactoring">
+      <created>1655842968622</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1655842968622</updated>
+    </task>
+    <task id="LOCAL-00011" summary="String Value implementation, Value refactoring,&#10;con op">
+      <created>1655885274984</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1655885274984</updated>
+    </task>
+    <task id="LOCAL-00012" summary="string escape character implementation, write and print refactoring">
+      <created>1655886334330</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1655886334330</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Char value implementation">
+      <created>1655886873982</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1655886873982</updated>
+    </task>
+    <task id="LOCAL-00014" summary="new value function &quot;rawstr&quot; for stack display, cast to type ops">
+      <created>1655887315842</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1655887315842</updated>
+    </task>
+    <task id="LOCAL-00015" summary="opFuncs in return of lorth.lua">
+      <created>1655892104437</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1655892104437</updated>
+    </task>
+    <task id="LOCAL-00016" summary="readme update">
+      <created>1655892503974</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1655892503974</updated>
+    </task>
+    <task id="LOCAL-00017" summary="clock op">
+      <created>1655892648271</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1655892648271</updated>
+    </task>
+    <task id="LOCAL-00018" summary="better operation table">
+      <created>1655892975665</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1655892975665</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="hex number implementaion" />
+    <MESSAGE value="if keyword fix, vars and macros between interpret calls" />
+    <MESSAGE value="param type hint" />
+    <MESSAGE value="removed idiv" />
+    <MESSAGE value="refactored &quot;!&quot; op" />
+    <MESSAGE value="computercraft feature" />
+    <MESSAGE value="local variable implementation" />
+    <MESSAGE value="copy function" />
+    <MESSAGE value="variable refactoring" />
+    <MESSAGE value="String Value implementation, Value refactoring,&#10;con op" />
+    <MESSAGE value="string escape character implementation, write and print refactoring" />
+    <MESSAGE value="Char value implementation" />
+    <MESSAGE value="new value function &quot;rawstr&quot; for stack display, cast to type ops" />
+    <MESSAGE value="opFuncs in return of lorth.lua" />
+    <MESSAGE value="readme update" />
+    <MESSAGE value="clock op" />
+    <MESSAGE value="better operation table" />
+    <option name="LAST_COMMIT_MESSAGE" value="better operation table" />
+  </component>
+</project>

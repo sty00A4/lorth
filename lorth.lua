@@ -716,6 +716,12 @@ if os.version then
             for _, v in ipairs(stack) do io.write("[", tostring(v), "] ") end print()
         end
     end
+else
+    local args = {...}
+    if args[1] then
+        local stack, err = runfile(args[1]) if err then print(err) return end
+        for _, v in ipairs(stack) do io.write("[", tostring(v), "] ") end print()
+    end
 end
 
 return { run = run, runfile = runfile, test = test, opFuncs = opFuncs, lex = lex, interpret = interpret }
