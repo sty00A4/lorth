@@ -4,9 +4,11 @@ A stack based programming language written in lua
 ---
 ## Syntax
 
-| type                 | examples                                |
+| type                 | examples or description                 |
 |----------------------|-----------------------------------------|
 | number               | `1`,`2`,`3`, ...                        |
+| char                 | `'a`, `'b`, ...                         |
+| string               | `"..."`                                 |
 | name                 | `var`, `age`, ...                       |
 | keyword              | `if`, `repeat`, `local`, `set`, `macro` |
 | operation            | `+`, `-`, `dup`, ...                    |
