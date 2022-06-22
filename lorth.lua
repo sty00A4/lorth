@@ -320,7 +320,7 @@ opFuncs = {
         return stack
     end,
     ["rot"] = function(stack)
-        local a = pop(stack, 1)
+        local a = pop(stack, #stack-2)
         if not a then return stack end
         push(stack, a)
         return stack
@@ -342,7 +342,12 @@ opFuncs = {
         return stack
     end,
     ["over"] = function(stack)
-        if not stack[1] then return stack end
+        local a = stack[#stack-1]:copy()
+        if not a then return stack end
+        push(stack, a)
+        return stack
+    end,
+    ["pick"] = function(stack)
         local a = stack[1]:copy()
         if not a then return stack end
         push(stack, a)
@@ -389,7 +394,7 @@ opFuncs = {
         push(stack, Number(math.ceil(a.value)))
         return stack
     end,
-    ["pop"] = function(stack)
+    ["drop"] = function(stack)
         pop(stack)
         return stack
     end,
