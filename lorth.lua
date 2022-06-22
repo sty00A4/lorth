@@ -105,13 +105,14 @@ local function Error(type_, details, pos)
     )
 end
 
-local Number, String, Macro
+local Number, String, Char, Macro
 Number = function(number)
     if number == math.floor(number) then number = math.floor(number) end
     return setmetatable(
             { value = number, copy = function(s) return Number(s.value) end,
               tonumber = function(s) return s:copy() end,
               tostring = function(s) return String(tostring(s.value)) end,
+              tochar = function(s) return Char(tostring(s.value):sub(1,1)) end
             },
             {
                 __name = "number", __tostring = function(s) return tostring(s.value) end,
@@ -138,7 +139,8 @@ String = function(str)
                   for i = 1, #s.value do num = num + string.byte(s.value:sub(i,i)) end
                   return Number(num)
               end,
-              tostring = function(s) return s:copy() end
+              tostring = function(s) return s:copy() end,
+              tochar = function(s) return Char(s.value:sub(1,1)) end
             },
             {
                 __name = "string", __tostring = function(s) return tostring(s.value) end,
@@ -154,6 +156,30 @@ String = function(str)
                 __concat = function(s, o) return String(s.value .. o:tostring().value) end,
                 __unm = function(s) return Number(-s:tonumber().value) end,
                 __bnot = function(s) if #s.value == 0 then return Number(1) end return Number(0) end
+            }
+    )
+end
+Char = function(char)
+    return setmetatable(
+            { value = char, copy = function(s) return Char(s.value) end,
+              tonumber = function(s) return Number(string.byte(s.value)) end,
+              tostring = function(s) return String(s.value) end,
+              tochar = function(s) return s:copy() end
+            },
+            {
+                __name = "char", __tostring = function(s) return tostring(s.value) end,
+                __eq = function(s, o) return s.value == o.value end,
+                __le = function(s, o) return s:tonumber().value <= o:tonumber().value end,
+                __lt = function(s, o) return s:tonumber().value < o:tonumber().value end,
+                __add = function(s, o) return Number(s:tonumber().value + o:tonumber().value) end,
+                __sub = function(s, o) return Number(s:tonumber().value - o:tonumber().value) end,
+                __mul = function(s, o) return Number(s:tonumber().value * o:tonumber().value) end,
+                __div = function(s, o) return Number(s:tonumber().value / o:tonumber().value) end,
+                __mod = function(s, o) return Number(s:tonumber().value % o:tonumber().value) end,
+                __pow = function(s, o) return Number(s:tonumber().value ^ o:tonumber().value) end,
+                __concat = function(s, o) return String(s.value .. o:tostring().value) end,
+                __unm = function(s) return Number(-s:tonumber().value) end,
+                __bnot = function() return Number(0) end
             }
     )
 end
@@ -613,7 +639,7 @@ local function interpret(tokens, stack, vars, locals, macros)
         end
         if token.type == "sub" then stack = interpret(token.value, stack, vars, copy(locals), macros) advance() end
         if token.type == "number" then push(stack, Number(token.value)) advance() end
-        if token.type == "char" then push(stack, Number(string.byte(token.value))) advance() end
+        if token.type == "char" then push(stack, Char(token.value)) advance() end
         if token.type == "string" then
             push(stack, String(token.value))
             advance()
