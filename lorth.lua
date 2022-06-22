@@ -105,27 +105,59 @@ local function Error(type_, details, pos)
     )
 end
 
-local function Number(number)
+local Number, String, Macro
+Number = function(number)
     if number == math.floor(number) then number = math.floor(number) end
     return setmetatable(
-            { value = number, copy = function(s) return Number(s.value) end },
+            { value = number, copy = function(s) return Number(s.value) end,
+              tonumber = function(s) return s:copy() end,
+              tostring = function(s) return String(tostring(s.value)) end,
+            },
             {
                 __name = "number", __tostring = function(s) return tostring(s.value) end,
-                __eq = function(s, o) return s.value == o.value end,
-                __le = function(s, o) return s.value <= o.value end,
-                __lt = function(s, o) return s.value < o.value end,
-                __add = function(s, o) return Number(s.value + o.value) end,
-                __sub = function(s, o) return Number(s.value - o.value) end,
-                __mul = function(s, o) return Number(s.value * o.value) end,
-                __div = function(s, o) return Number(s.value / o.value) end,
-                __mod = function(s, o) return Number(s.value % o.value) end,
-                __pow = function(s, o) return Number(s.value ^ o.value) end,
+                __eq = function(s, o) return s.value == o:tonumber().value end,
+                __le = function(s, o) return s.value <= o:tonumber().value end,
+                __lt = function(s, o) return s.value < o:tonumber().value end,
+                __add = function(s, o) return Number(s.value + o:tonumber().value) end,
+                __sub = function(s, o) return Number(s.value - o:tonumber().value) end,
+                __mul = function(s, o) return Number(s.value * o:tonumber().value) end,
+                __div = function(s, o) return Number(s.value / o:tonumber().value) end,
+                __mod = function(s, o) return Number(s.value % o:tonumber().value) end,
+                __pow = function(s, o) return Number(s.value ^ o:tonumber().value) end,
+                __concat = function(s, o) return String(s:tostring().value .. o:tostring().value) end,
                 __unm = function(s) return Number(-s.value) end,
                 __bnot = function(s) if s.value == 0 then return Number(1) end return Number(0) end
             }
     )
 end
-local function Macro(proc)
+String = function(str)
+    return setmetatable(
+            { value = str, copy = function(s) return String(s.value) end,
+              tonumber = function(s)
+                  local num = 0
+                  for i = 1, #s do num = num + string.byte(s:sub(i,i)) end
+                  return Number(num)
+              end,
+              tostring = function(s) return s:copy() end
+            },
+            {
+                __name = "string", __tostring = function(s) return '"'..tostring(s.value)..'"' end,
+                __eq = function(s, o) return s.value == o.value end,
+                __le = function(s, o) return s:tonumber().value <= o:tonumber().value end,
+                __lt = function(s, o) return s:tonumber().value < o:tonumber().value end,
+                __add = function(s, o) return Number(s:tonumber().value + o:tonumber().value) end,
+                __sub = function(s, o) return Number(s:tonumber().value - o:tonumber().value) end,
+                __mul = function(s, o) return Number(s:tonumber().value * o:tonumber().value) end,
+                __div = function(s, o) return Number(s:tonumber().value / o:tonumber().value) end,
+                __mod = function(s, o) return Number(s:tonumber().value % o:tonumber().value) end,
+                __pow = function(s, o) return Number(s:tonumber().value ^ o:tonumber().value) end,
+                __concat = function(s, o) return String(s.value .. o:tostring().value) end,
+                __unm = function(s) return Number(-s:tonumber().value) end,
+                __bnot = function(s) if #s.value == 0 then return Number(1) end return Number(0) end
+            }
+    )
+end
+Macro = function(proc)
     return setmetatable(
             { proc = proc, copy = function(s) return Macro(s.proc) end },
             { __name = "macro" }
@@ -398,10 +430,12 @@ opFuncs = {
         io.write(a)
         return stack
     end,
-    ["writeChar"] = function(stack)
+    ["con"] = function(stack)
         local a = pop(stack)
+        local b = pop(stack)
         if not a then return stack end
-        io.write(string.char(a.value))
+        if not b then return stack end
+        push(stack, b .. a)
         return stack
     end,
 }
@@ -568,7 +602,7 @@ local function interpret(tokens, stack, vars, locals, macros)
         if token.type == "number" then push(stack, Number(token.value)) advance() end
         if token.type == "char" then push(stack, Number(string.byte(token.value))) advance() end
         if token.type == "string" then
-            for idx = 1, #token.value do push(stack, Number(string.byte(token.value:sub(idx,idx)))) end
+            push(stack, String(token.value))
             advance()
         end
         if token.type == "name" then

@@ -1,6 +1,1 @@
-macro say (
-    local x
-    len x - repeat shift
-    rev len repeat writeChar
-)
-"hello there" len say
+"hello " "there" con
