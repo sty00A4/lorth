@@ -1,0 +1,2 @@
+; factorial
+macro fact (1 swap local x x range x 1 - repeat *)

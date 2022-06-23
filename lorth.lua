@@ -31,6 +31,7 @@ string.join = function(s, t)
     return str
 end
 table.copy = function(t)
+    if t.copy then if type(t.copy) == "function" then return t:copy() end end
     local newT = {}
     for k, v in pairs(t) do
         if type(v) == "table" then newT[k] = table.copy(v)
@@ -572,7 +573,8 @@ opFuncs = {
 }
 local symbols = { "+", "-", "*", "/", "**", "=", "!", "!=", "<", ">", "<=", ">=", "#" }
 local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["set"] = "set", ["local"] = "local",
-                   ["macro"] = "macro", ["each"] = "each" }
+                   ["macro"] = "macro", ["each"] = "each", ["use"] = "use" }
+local runfile, run
 
 ---@param fn string
 ---@param text string
@@ -691,14 +693,14 @@ local function interpret(tokens, stack, vars, locals, macros)
     indent=indent+1
     while true do
         if token.type == "exit" then break end
-        if token.type == "op" then stack, err = opFuncs[token.value](stack, token) if err then return nil, err end advance() end
+        if token.type == "op" then stack, err = opFuncs[token.value](stack, token) if err then return nil, vars, locals, macros, err end advance() end
         if token.type == "keyword" then
             if token.value == keywords["if"] then
                 advance()
                 local condition = stack[#stack]
                 if condition ~= nil then if condition ~= Number(0) then
-                    if token.type == "sub" then stack, err = interpret(token.value, stack, vars, copy(locals), macros) if err then return nil, err end
-                    else stack, err = interpret({ token }, stack, vars, copy(locals), macros) if err then return nil, err end end
+                    if token.type == "sub" then stack, vars, locals, macros, err = interpret(token.value, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
+                    else stack, vars, locals, macros, err = interpret({ token }, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end end
                 end end
                 advance()
             end
@@ -710,8 +712,8 @@ local function interpret(tokens, stack, vars, locals, macros)
                 if amount then if amount.value > 0 then
                     local before = i
                     for _ = 1, amount.value do
-                        if token.type == "sub" then stack, err = interpret(token.value, stack, vars, copy(locals), macros) if err then return nil, err end
-                        else stack, err = interpret({ token }, stack, vars, copy(locals), macros) if err then return nil, err end end
+                        if token.type == "sub" then stack, vars, locals, macros, err = interpret(token.value, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
+                        else stack, vars, locals, macros, err = interpret({ token }, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end end
                         i = before
                     end
                 end end
@@ -722,8 +724,8 @@ local function interpret(tokens, stack, vars, locals, macros)
                 if #stack > 0 then
                     local before = i
                     for _ = 1, #stack do
-                        if token.type == "sub" then stack, err = interpret(token.value, stack, vars, copy(locals), macros) if err then return nil, err end
-                        else stack, err = interpret({ token }, stack, vars, copy(locals), macros) if err then return nil, err end end
+                        if token.type == "sub" then stack, vars, locals, macros, err = interpret(token.value, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
+                        else stack, vars, locals, macros, err = interpret({ token }, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end end
                         stack = opFuncs.roll(stack)
                         i = before
                     end
@@ -732,7 +734,7 @@ local function interpret(tokens, stack, vars, locals, macros)
             end
             if token.value == keywords["macro"] then
                 advance()
-                if token.type ~= "name" then return nil, Error("syntax error", "expected name", token.pos) end
+                if token.type ~= "name" then return nil, vars, locals, macros, Error("syntax error", "expected name", token.pos:copy()) end
                 local macroName = token.value
                 advance()
                 local proc = token:copy()
@@ -741,61 +743,65 @@ local function interpret(tokens, stack, vars, locals, macros)
             end
             if token.value == keywords["local"] then
                 advance()
-                if token.type ~= "name" then return nil, Error("syntax error", "expected name", token.po:copy()) end
+                if token.type ~= "name" then return nil, vars, locals, macros, Error("syntax error", "expected name", token.pos:copy()) end
                 vars[token.value] = pop(stack)
                 push(locals, token.value)
                 advance()
             end
             if token.value == keywords["set"] then
                 advance()
-                if token.type ~= "name" then return nil, Error("syntax error", "expected name", token.po:copy()) end
+                if token.type ~= "name" then return nil, vars, locals, macros, Error("syntax error", "expected name", token.pos:copy()) end
                 vars[token.value] = pop(stack)
                 advance()
             end
+            if token.value == keywords["use"] then
+                advance()
+                if token.type ~= "string" then return nil, vars, locals, macros, Error("syntax error", "expected string", token.pos:copy()) end
+                _, vars, locals, macros, err = runfile(token.value) if err then return nil, vars, locals, macros, err end
+                advance()
+            end
         end
-        if token.type == "sub" then stack = interpret(token.value, stack, vars, copy(locals), macros) advance() end
+        if token.type == "sub" then stack, vars, locals, macros, err = interpret(token.value, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end advance() end
         if token.type == "number" then push(stack, Number(token.value)) advance() end
         if token.type == "char" then push(stack, Char(token.value)) advance() end
         if token.type == "string" then push(stack, String(token.value)) advance() end
         if token.type == "name" then
             if macros[token.value] then
-                if type(macros[token.value].value) == "table" then interpret(macros[token.value].value, stack, vars, copy(locals), macros)
-                else interpret({ macros[token.value]:copy() }, stack, vars, copy(locals), macros) end
+                if type(macros[token.value].value) == "table" then stack, vars, locals, macros, err = interpret(macros[token.value].value, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
+                else stack, vars, locals, macros, err = interpret({ macros[token.value]:copy() }, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end end
             else
                 if vars[token.value] then push(stack, vars[token.value]:copy())
-                else return nil, Error("name error", "name not registered in the variables", token.pos:copy()) end
+                else return nil, vars, locals, macros, Error("name error", "name not registered in the variables", token.pos:copy()) end
             end
             advance()
         end
     end
     indent=indent-1
-    for _,v in pairs(locals) do
-        vars[v] = nil
-    end
-    return stack
+    for _,v in pairs(locals) do vars[v] = nil end
+    return stack, vars, locals, macros
 end
 
 local function test()
     local file = io.open("test.lo", "r")
     local text = file:read("*a")
     file:close()
-    local stack, tokens, err = {}
-    tokens, err = lex("test.lo", text) if err then return nil, err end
-    stack, err = interpret(tokens) if err then return nil, err end
-    return stack
+    local stack, tokens, vars, locals, macros, err = {}
+    tokens, err = lex("test.lo", text) if err then return nil, vars, locals, macros, err end
+    stack, vars, locals, macros, err = interpret(tokens) if err then return nil, vars, locals, macros, err end
+    return stack, vars, locals, macros
 end
 
 ---@param fn string
 ---@param text string
-local function run(fn, text)
-    local tokens, stack, err
+run = function(fn, text)
+    local tokens, stack, err, vars, locals, macros
     tokens, err = lex(fn, text) if err then print(err) return end
-    stack, err = interpret(tokens) if err then print(err) return end
-    return stack
+    stack, vars, locals, macros, err = interpret(tokens) if err then print(err) return end
+    return stack, vars, locals, macros
 end
 
 ---@param fn string
-local function runfile(fn)
+runfile = function(fn)
     local file = io.open(fn, "r")
     local text = file:read("*a")
     file:close()
@@ -805,7 +811,7 @@ if os.version then
     if os.version():sub(1,7) == "CraftOS" then
         local args = {...}
         if #args > 0 then
-            local stack, err = runfile(args[1]) if err then print(err) return end
+            local stack, vars, locals, macros, err = runfile(args[1]) if err then print(err) return end
             printStack(stack)
         end
     end

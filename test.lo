@@ -1,2 +1,2 @@
-1 0 1 0
-each !
+use "math.lo"
+3 fact
