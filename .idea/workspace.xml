@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fdba2931-5b31-44f7-8a18-b0031dd44dac" name="Changes" comment="another exit code fix">
+    <list default="true" id="fdba2931-5b31-44f7-8a18-b0031dd44dac" name="Changes" comment="variables final refactoring (hopefully)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lorth.lua" beforeDir="false" afterPath="$PROJECT_DIR$/lorth.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.lo" beforeDir="false" afterPath="$PROJECT_DIR$/test.lo" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +39,7 @@
       <recent name="C:\Users\vince\PycharmProjects\lorth" />
     </key>
   </component>
-  <component name="RunManager" selected="Lua Application.test">
+  <component name="RunManager" selected="Lua Application.shell">
     <configuration name="shell" type="lua.app" factoryName="Lua Application">
       <module name="lorth" />
       <option name="program" value="lua.exe" />
@@ -265,7 +264,14 @@
       <option name="project" value="LOCAL" />
       <updated>1656000712517</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="variables final refactoring (hopefully)">
+      <created>1656003469864</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1656003469864</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -280,7 +286,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="if keyword fix, vars and macros between interpret calls" />
     <MESSAGE value="param type hint" />
     <MESSAGE value="removed idiv" />
     <MESSAGE value="refactored &quot;!&quot; op" />
@@ -305,6 +310,7 @@
     <MESSAGE value="break keyword (weak functionality)" />
     <MESSAGE value="fixed lexer ignoring unrecognized chars, exit code fixed" />
     <MESSAGE value="another exit code fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="another exit code fix" />
+    <MESSAGE value="variables final refactoring (hopefully)" />
+    <option name="LAST_COMMIT_MESSAGE" value="variables final refactoring (hopefully)" />
   </component>
 </project>

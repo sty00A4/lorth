@@ -751,12 +751,15 @@ local function interpret(tokens, stack, vars, locals, macros)
             elseif token.value == keywords["local"] then
                 advance()
                 if token.type ~= "name" then return nil, vars, locals, macros, Error("syntax error", "expected name", token.pos:copy()) end
+                if vars[token.value] then return nil, vars, locals, macros, Error("name error", "name already registered in vars") end
+                if locals[token.value] then return nil, vars, locals, macros, Error("name error", "name already registered in locals, did you mean 'set' instead of 'local'") end
                 locals[token.value] = pop(stack)
                 advance()
             elseif token.value == keywords["set"] then
                 advance()
                 if token.type ~= "name" then return nil, vars, locals, macros, Error("syntax error", "expected name", token.pos:copy()) end
-                vars[token.value] = pop(stack)
+                if locals[token.value] then locals[token.value] = pop(stack)
+                else vars[token.value] = pop(stack) end
                 advance()
             elseif token.value == keywords["use"] then
                 advance()
