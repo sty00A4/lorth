@@ -39,6 +39,17 @@ table.copy = function(t)
     end
     return newT
 end
+table.extend = function(t1, t2)
+    local newT = table.copy(t1)
+    if t1[1] and t2[1] then
+        for i, v in ipairs(t2) do table.insert(t1, v) end
+    else
+        for k, v in pairs(t2) do
+            newT[k] = v
+        end
+    end
+    return newT
+end
 local function insertionSort(array)
     local len = #array
     for j = 2, len do
@@ -63,6 +74,7 @@ local contKey = table.containsKey
 local contStart = table.containsStart
 local contKeyStart = table.containsKeyStart
 local copy = table.copy
+local extend = table.extend
 local function printStack(stack) for _, v in ipairs(stack) do io.write("[", v:rawstr(), "] ") end print() end
 
 ---@param idx number
@@ -694,18 +706,17 @@ local function interpret(tokens, stack, vars, locals, macros)
     local err
     indent=indent+1
     while true do
-        if token.type == "exit" then break end
-        if token.type == "op" then stack, err = opFuncs[token.value](stack, token) if err then return nil, vars, locals, macros, err end advance() end
-        if token.type == "keyword" then
+        if token.type == "exit" then break
+        elseif token.type == "op" then stack, err = opFuncs[token.value](stack, token) if err then return nil, vars, locals, macros, err end advance()
+        elseif token.type == "keyword" then
             if token.value == keywords["if"] then
                 advance()
                 local condition = pop(stack)
                 if condition ~= nil then if condition ~= Number(0) then
-                    stack, vars, _, macros, err = interpret(token, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
+                    stack, vars, _, macros, err = interpret(token, copy(stack), extend(copy(vars), copy(locals)), nil, copy(macros)) if err then return nil, vars, locals, macros, err end
                 end end
                 advance()
-            end
-            if token.value == keywords["repeat"] then
+            elseif token.value == keywords["repeat"] then
                 advance()
                 local amount = pop(stack)
                 amount = amount:tonumber()
@@ -713,25 +724,23 @@ local function interpret(tokens, stack, vars, locals, macros)
                 if amount then if amount.value > 0 then
                     local before = i
                     for _ = 1, amount.value do
-                        stack, vars, __, macros, err = interpret(token, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
+                        stack, vars, __, macros, err = interpret(token, copy(stack), extend(copy(vars), copy(locals)), nil, copy(macros)) if err then return nil, vars, locals, macros, err end
                         i = before
                     end
                 end end
                 advance()
-            end
-            if token.value == keywords["each"] then
+            elseif token.value == keywords["each"] then
                 advance()
                 if #stack > 0 then
                     local before = i
                     for _ = 1, #stack do
-                        stack, vars, __, macros, err = interpret(token, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
+                        stack, vars, __, macros, err = interpret(token, copy(stack), extend(copy(vars), copy(locals)), nil, copy(macros)) if err then return nil, vars, locals, macros, err end
                         stack = opFuncs.roll(stack)
                         i = before
                     end
                 end
                 advance()
-            end
-            if token.value == keywords["macro"] then
+            elseif token.value == keywords["macro"] then
                 advance()
                 if token.type ~= "name" then return nil, vars, locals, macros, Error("syntax error", "expected name", token.pos:copy()) end
                 local macroName = token.value
@@ -739,46 +748,41 @@ local function interpret(tokens, stack, vars, locals, macros)
                 local proc = token:copy()
                 advance()
                 macros[macroName] = proc
-            end
-            if token.value == keywords["local"] then
+            elseif token.value == keywords["local"] then
                 advance()
                 if token.type ~= "name" then return nil, vars, locals, macros, Error("syntax error", "expected name", token.pos:copy()) end
                 locals[token.value] = pop(stack)
                 advance()
-            end
-            if token.value == keywords["set"] then
+            elseif token.value == keywords["set"] then
                 advance()
                 if token.type ~= "name" then return nil, vars, locals, macros, Error("syntax error", "expected name", token.pos:copy()) end
                 vars[token.value] = pop(stack)
                 advance()
-            end
-            if token.value == keywords["use"] then
+            elseif token.value == keywords["use"] then
                 advance()
                 if token.type ~= "string" then return nil, vars, locals, macros, Error("syntax error", "expected string", token.pos:copy()) end
                 _, vars, locals, macros, err = runfile(token.value) if err then return nil, vars, locals, macros, err end
                 advance()
-            end
-            if token.value == keywords["exit"] then
+            elseif token.value == keywords["exit"] then
                 local code = pop(stack) if not code then code = Number(0) end
                 os.exit(code:tonumber().value)
-            end
-            if token.value == keywords["break"] then break end
-        end
-        if token.type == "sub" then stack, vars, __, macros, err = interpret(token.value, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end advance() end
-        if token.type == "number" then push(stack, Number(token.value)) advance() end
-        if token.type == "char" then push(stack, Char(token.value)) advance() end
-        if token.type == "string" then push(stack, String(token.value)) advance() end
-        if token.type == "name" then
+            elseif token.value == keywords["break"] then break
+            else return nil, vars, locals, macros, Error("syntax error", "keyword "..token.value.." not expected") end
+        elseif token.type == "sub" then stack, vars, __, macros, err = interpret(token.value, copy(stack), extend(copy(vars), copy(locals)), nil, copy(macros)) if err then return nil, vars, locals, macros, err end advance()
+        elseif token.type == "number" then push(stack, Number(token.value)) advance()
+        elseif token.type == "char" then push(stack, Char(token.value)) advance()
+        elseif token.type == "string" then push(stack, String(token.value)) advance()
+        elseif token.type == "name" then
             if macros[token.value] then
-                if type(macros[token.value].value) == "table" then stack, vars, locals, macros, err = interpret(macros[token.value], copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
-                else stack, vars, locals, macros, err = interpret({ macros[token.value]:copy() }, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end end
+                if type(macros[token.value].value) == "table" then stack, vars, __, macros, err = interpret(macros[token.value], copy(stack), extend(copy(vars), copy(locals)), nil, copy(macros)) if err then return nil, vars, locals, macros, err end
+                else stack, vars, __, macros, err = interpret({ macros[token.value]:copy() }, copy(stack), extend(copy(vars), copy(locals)), nil, copy(macros)) if err then return nil, vars, locals, macros, err end end
             else
                 if vars[token.value] then push(stack, vars[token.value]:copy())
                 elseif locals[token.value] then push(stack, locals[token.value]:copy())
                 else return nil, vars, locals, macros, Error("name error", "name not registered in the variables", token.pos:copy()) end
             end
             advance()
-        end
+        else return nil, vars, locals, macros, Error("syntax error", "token type "..token.type.." can't be computed") end
     end
     indent=indent-1
     for _,v in pairs(locals) do vars[v] = nil end
