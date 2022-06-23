@@ -4,13 +4,15 @@ A stack based programming language written in lua
 ---
 ## Syntax
 
-| type                 | examples                              |
-|----------------------|---------------------------------------|
-| number               | `1`,`2`,`3`, ...                      |
-| name                 | `var`, `age`, ...                     |
-| keyword              | `if`, `repeat`, `reg`, `set`, `macro` |
-| operation            | `+`, `-`, `dup`, ...                  |
-| sub                  | `( ... )`                             |
+| type                 | examples or description                 |
+|----------------------|-----------------------------------------|
+| number               | `1`,`2`,`3`, ...                        |
+| char                 | `'a`, `'b`, ...                         |
+| string               | `"..."`                                 |
+| name                 | `var`, `age`, ...                       |
+| keyword              | `if`, `repeat`, `local`, `set`, `macro` |
+| operation            | `+`, `-`, `dup`, ...                    |
+| sub                  | `( ... )`                               |
 
 ## Interpreter
 if you just put in a `number` or `name`, it'll be put on the stack
@@ -30,11 +32,13 @@ if you just put in a `number` or `name`, it'll be put on the stack
 | `<=`      | `a b -> 0/1`                | compares for `a` is less than or equal to `b`                 |
 | `>=`      | `a b -> 0/1`                | compares for `a` is greater than or equal to `b`              |
 | `#`       | `a -> a stack[a]`           | gets value of index `a`                                       |
-| `pop`     | `a b -> a`                  | pops top value from stack                                     |
+| `drop`    | `a b -> a`                  | removes the top value from stack                              |
 | `dup`     | `a b -> a b b`              | copies the top value to the top of the stack                  |
 | `swap`    | `a b c -> a c b`            | swaps top two values of the stack                             |
-| `over`    | `a b -> a b a`              | puts a copy of the bottom value to the top                    |
-| `rot`     | `a b c -> c a b`            | moves the top value to the bottom of the stack                |
+| `over`    | `a b c -> a b c b`          | puts a copy of the second top of the stack value to the top   |
+| `pick`    | `a b c -> a b c a`          | puts a copy of the bottom value of the stack to the top       |
+| `rot`     | `a b c d -> a c d b`        | moves the third top value of the stack to the top             |
+| `roll`    | `a b c d -> b c d a`        | moves the bottom value of the stack to the top                |
 | `shift`   | `a b c -> b c`              | pops the last value of the stack                              |
 | `sort`    | `a b c -> ` value dependent | sorts the stack values from low to high                       |
 | `sum`     | `a b c -> a+b+c`            | sums up the stack values                                      |
