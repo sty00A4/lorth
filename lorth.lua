@@ -572,8 +572,8 @@ opFuncs = {
     end
 }
 local symbols = { "+", "-", "*", "/", "**", "=", "!", "!=", "<", ">", "<=", ">=", "#" }
-local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["set"] = "set", ["local"] = "local",
-                   ["macro"] = "macro", ["each"] = "each", ["use"] = "use", ["exit"] = "exit" }
+local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["set"] = "set", ["local"] = "local", ["macro"] = "macro",
+                   ["each"] = "each", ["use"] = "use", ["exit"] = "exit", ["break"] = "break" }
 local runfile, run
 
 ---@param fn string
@@ -699,7 +699,7 @@ local function interpret(tokens, stack, vars, locals, macros)
         if token.type == "keyword" then
             if token.value == keywords["if"] then
                 advance()
-                local condition = stack[#stack]
+                local condition = pop(stack)
                 if condition ~= nil then if condition ~= Number(0) then
                     stack, vars, _, macros, err = interpret(token, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
                 end end
@@ -759,6 +759,7 @@ local function interpret(tokens, stack, vars, locals, macros)
                 advance()
             end
             if token.value == keywords["exit"] then os.exit(pop(stack).value) end
+            if token.value == keywords["break"] then break end
         end
         if token.type == "sub" then stack, vars, __, macros, err = interpret(token.value, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end advance() end
         if token.type == "number" then push(stack, Number(token.value)) advance() end
