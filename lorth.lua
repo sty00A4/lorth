@@ -668,7 +668,7 @@ local function lex(fn, text)
                 stop = pos:copy()
                 advance()
                 push(tokens, Token("sub", subTokens, PositionRange(start, stop)))
-            else advance() end
+            else return nil, Error("syntax error", "unrecognized character '"..char.."'", PositionRange(pos:copy(), pos:copy())) end
         end
         return tokens
     end
@@ -758,7 +758,10 @@ local function interpret(tokens, stack, vars, locals, macros)
                 _, vars, locals, macros, err = runfile(token.value) if err then return nil, vars, locals, macros, err end
                 advance()
             end
-            if token.value == keywords["exit"] then os.exit(pop(stack).value) end
+            if token.value == keywords["exit"] then
+                local code = pop(stack) if not code then code = Number(0) end
+                os.exit(code.value)
+            end
             if token.value == keywords["break"] then break end
         end
         if token.type == "sub" then stack, vars, __, macros, err = interpret(token.value, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end advance() end
