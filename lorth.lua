@@ -532,7 +532,7 @@ opFuncs = {
 }
 local symbols = { "+", "-", "*", "/", "**", "=", "!", "!=", "<", ">", "<=", ">=", "#" }
 local keywords = { ["if"] = "if", ["repeat"] = "repeat", ["set"] = "set", ["local"] = "local",
-                   ["macro"] = "macro", }
+                   ["macro"] = "macro", ["each"] = "each" }
 
 ---@param fn string
 ---@param text string
@@ -675,6 +675,18 @@ local function interpret(tokens, stack, vars, locals, macros)
                         i = before
                     end
                 end end
+                advance()
+            end
+            if token.value == keywords["each"] then
+                advance()
+                if #stack > 0 then
+                    local before = i
+                    for _ = 1, #stack do
+                        if token.type == "sub" then stack, err = interpret(token.value, stack, vars, copy(locals), macros) if err then return nil, err end
+                        else stack, err = interpret({ token }, stack, vars, copy(locals), macros) if err then return nil, err end end
+                        i = before
+                    end
+                end
                 advance()
             end
             if token.value == keywords["macro"] then

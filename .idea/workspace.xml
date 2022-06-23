@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fdba2931-5b31-44f7-8a18-b0031dd44dac" name="Changes" comment="and, or, roll ops, updated readme" />
+    <list default="true" id="fdba2931-5b31-44f7-8a18-b0031dd44dac" name="Changes" comment="everything fixed?">
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,11 +26,16 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\vince\PycharmProjects\lorth" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="test" type="lua.app" factoryName="Lua Application">
       <option name="program" value="lua.exe" />
       <option name="file" value="test.lua" />
-      <option name="workingDir" value="C:\Users\Vincent Reuter\PycharmProjects\lorth" />
+      <option name="workingDir" value="C:\Users\vince\PycharmProjects\lorth" />
       <option name="debuggerType" value="2" />
       <option name="params" value="" />
       <option name="charset" value="UTF-8" />
@@ -39,7 +46,7 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="33409991-aa7b-4767-a1fd-32d8cb5a59cc" name="Changes" comment="" />
+      <changelist id="fdba2931-5b31-44f7-8a18-b0031dd44dac" name="Changes" comment="and, or, roll ops, updated readme" />
       <created>1655812534642</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -171,7 +178,14 @@
       <option name="project" value="LOCAL" />
       <updated>1655892975665</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="everything fixed?">
+      <created>1655974943294</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1655974943294</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -203,6 +217,7 @@
     <MESSAGE value="readme update" />
     <MESSAGE value="clock op" />
     <MESSAGE value="better operation table" />
-    <option name="LAST_COMMIT_MESSAGE" value="better operation table" />
+    <MESSAGE value="everything fixed?" />
+    <option name="LAST_COMMIT_MESSAGE" value="everything fixed?" />
   </component>
 </project>
