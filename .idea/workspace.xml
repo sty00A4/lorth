@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fdba2931-5b31-44f7-8a18-b0031dd44dac" name="Changes" comment="everything fixed?">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    <list default="true" id="fdba2931-5b31-44f7-8a18-b0031dd44dac" name="Changes" comment="each keyword (pretty much &quot;len repeat&quot; but in one word)">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lorth.lua" beforeDir="false" afterPath="$PROJECT_DIR$/lorth.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.lo" beforeDir="false" afterPath="$PROJECT_DIR$/test.lo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.lua" beforeDir="false" afterPath="$PROJECT_DIR$/test.lua" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -185,7 +188,14 @@
       <option name="project" value="LOCAL" />
       <updated>1655974943294</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="each keyword (pretty much &quot;len repeat&quot; but in one word)">
+      <created>1655975386645</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1655975386645</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -218,6 +228,7 @@
     <MESSAGE value="clock op" />
     <MESSAGE value="better operation table" />
     <MESSAGE value="everything fixed?" />
-    <option name="LAST_COMMIT_MESSAGE" value="everything fixed?" />
+    <MESSAGE value="each keyword (pretty much &quot;len repeat&quot; but in one word)" />
+    <option name="LAST_COMMIT_MESSAGE" value="each keyword (pretty much &quot;len repeat&quot; but in one word)" />
   </component>
 </project>

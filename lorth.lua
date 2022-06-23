@@ -62,6 +62,7 @@ local contKey = table.containsKey
 local contStart = table.containsStart
 local contKeyStart = table.containsKeyStart
 local copy = table.copy
+local function printStack(stack) for _, v in ipairs(stack) do io.write("[", v:rawstr(), "] ") end print() end
 
 ---@param idx number
 ---@param ln number
@@ -212,6 +213,7 @@ end
 local opFuncs
 opFuncs = {
     ["+"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -220,6 +222,7 @@ opFuncs = {
         return stack
     end,
     ["-"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -228,6 +231,7 @@ opFuncs = {
         return stack
     end,
     ["*"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -236,6 +240,7 @@ opFuncs = {
         return stack
     end,
     ["/"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -244,6 +249,7 @@ opFuncs = {
         return stack
     end,
     ["%"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -252,6 +258,7 @@ opFuncs = {
         return stack
     end,
     ["**"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -260,6 +267,7 @@ opFuncs = {
         return stack
     end,
     ["="] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -268,12 +276,14 @@ opFuncs = {
         return stack
     end,
     ["!"] = function(stack)
+        if #stack < 1 then return stack end
         local a = pop(stack)
         if not a then return stack end
         if a.value == 0 then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     ["!="] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -282,6 +292,7 @@ opFuncs = {
         return stack
     end,
     ["<"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -290,6 +301,7 @@ opFuncs = {
         return stack
     end,
     [">"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -298,6 +310,7 @@ opFuncs = {
         return stack
     end,
     ["<="] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -306,6 +319,7 @@ opFuncs = {
         return stack
     end,
     [">="] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -314,30 +328,35 @@ opFuncs = {
         return stack
     end,
     ["#"] = function(stack, token)
+        if #stack < 1 then return stack end
         local a = pop(stack)
         if not a then return stack end
         if stack[a.value+1] then push(stack, stack[a.value+1]) else return nil, Error("index error", "index out of range", token.pos) end
         return stack
     end,
     ["or"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack) if not a then return stack end a = a:tonumber()
         local b = pop(stack) if not b then return stack end b = b:tonumber()
         if a.value ~= 0 or b.value ~= 0 then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     ["and"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack) if not a then return stack end a = a:tonumber()
         local b = pop(stack) if not b then return stack end b = b:tonumber()
         if a.value ~= 0 and b.value ~= 0 then push(stack, Number(1)) else push(stack, Number(0)) end
         return stack
     end,
     ["rot"] = function(stack)
+        if #stack < 1 then return stack end
         local a = pop(stack, #stack-2)
         if not a then return stack end
         push(stack, a)
         return stack
     end,
     ["dup"] = function(stack)
+        if #stack < 1 then return stack end
         local a = pop(stack)
         if not a then return stack end
         push(stack, a)
@@ -345,6 +364,7 @@ opFuncs = {
         return stack
     end,
     ["swap"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -354,23 +374,27 @@ opFuncs = {
         return stack
     end,
     ["over"] = function(stack)
+        if #stack < 1 then return stack end
         local a = stack[#stack-1]:copy()
         if not a then return stack end
         push(stack, a)
         return stack
     end,
     ["pick"] = function(stack)
+        if #stack < 1 then return stack end
         local a = stack[1]:copy()
         if not a then return stack end
         push(stack, a)
         return stack
     end,
     ["roll"] = function(stack)
+        if #stack < 1 then return stack end
         local a = pop(stack, 1)
         push(stack, a)
         return stack
     end,
     ["max"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -379,6 +403,7 @@ opFuncs = {
         return stack
     end,
     ["min"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -400,12 +425,14 @@ opFuncs = {
         return insertionSort(stack)
     end,
     ["flr"] = function(stack)
+        if #stack < 1 then return stack end
         local a = pop(stack)
         if not a then return stack end
         push(stack, Number(math.floor(a.value)))
         return stack
     end,
     ["ceil"] = function(stack)
+        if #stack < 1 then return stack end
         local a = pop(stack)
         if not a then return stack end
         push(stack, Number(math.ceil(a.value)))
@@ -420,6 +447,7 @@ opFuncs = {
         return stack
     end,
     ["filter"] = function(stack)
+        if #stack < 1 then return stack end
         local a, i = pop(stack), 1
         if not a then return stack end
         while i <= #stack do
@@ -428,6 +456,7 @@ opFuncs = {
         return stack
     end,
     ["filterLT"] = function(stack)
+        if #stack < 1 then return stack end
         local a, i = pop(stack), 1
         if not a then return stack end
         while i <= #stack do
@@ -436,6 +465,7 @@ opFuncs = {
         return stack
     end,
     ["filterGT"] = function(stack)
+        if #stack < 1 then return stack end
         local a, i = pop(stack), 1
         if not a then return stack end
         while i <= #stack do
@@ -444,6 +474,7 @@ opFuncs = {
         return stack
     end,
     ["filterLE"] = function(stack)
+        if #stack < 1 then return stack end
         local a, i = pop(stack), 1
         if not a then return stack end
         while i <= #stack do
@@ -452,6 +483,7 @@ opFuncs = {
         return stack
     end,
     ["filterGE"] = function(stack)
+        if #stack < 1 then return stack end
         local a, i = pop(stack), 1
         if not a then return stack end
         while i <= #stack do
@@ -464,6 +496,7 @@ opFuncs = {
         return stack
     end,
     ["sum"] = function(stack)
+        if #stack < 1 then return stack end
         for i = 1, #stack-1 do stack = opFuncs["+"](stack) end
         return stack
     end,
@@ -472,6 +505,7 @@ opFuncs = {
         return stack
     end,
     ["range"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -482,6 +516,7 @@ opFuncs = {
         return stack
     end,
     ["print"] = function(stack)
+        if #stack < 1 then return stack end
         local a = pop(stack)
         if not a then return stack end
         print(a)
@@ -494,12 +529,14 @@ opFuncs = {
         return stack
     end,
     ["write"] = function(stack)
+        if #stack < 1 then return stack end
         local a = pop(stack)
         if not a then return stack end
         io.write(tostring(a))
         return stack
     end,
     ["con"] = function(stack)
+        if #stack < 2 then return stack end
         local a = pop(stack)
         local b = pop(stack)
         if not a then return stack end
@@ -508,18 +545,21 @@ opFuncs = {
         return stack
     end,
     ["number"] = function(stack)
+        if #stack < 1 then return stack end
         local a = pop(stack)
         if not a then return stack end
         push(stack, a:tonumber())
         return stack
     end,
     ["string"] = function(stack)
+        if #stack < 1 then return stack end
         local a = pop(stack)
         if not a then return stack end
         push(stack, a:tostring())
         return stack
     end,
     ["char"] = function(stack)
+        if #stack < 1 then return stack end
         local a = pop(stack)
         if not a then return stack end
         push(stack, a:tochar())
@@ -684,6 +724,7 @@ local function interpret(tokens, stack, vars, locals, macros)
                     for _ = 1, #stack do
                         if token.type == "sub" then stack, err = interpret(token.value, stack, vars, copy(locals), macros) if err then return nil, err end
                         else stack, err = interpret({ token }, stack, vars, copy(locals), macros) if err then return nil, err end end
+                        stack = opFuncs.roll(stack)
                         i = before
                     end
                 end
@@ -740,7 +781,6 @@ local function test()
     file:close()
     local stack, tokens, err = {}
     tokens, err = lex("test.lo", text) if err then return nil, err end
-    --for _, t in ipairs(tokens) do io.write(tostring(t), " ") end print()
     stack, err = interpret(tokens) if err then return nil, err end
     return stack
 end
@@ -766,9 +806,9 @@ if os.version then
         local args = {...}
         if #args > 0 then
             local stack, err = runfile(args[1]) if err then print(err) return end
-            for _, v in ipairs(stack) do io.write("[", tostring(v), "] ") end print()
+            printStack(stack)
         end
     end
 end
 
-return { run = run, runfile = runfile, test = test, opFuncs = opFuncs, lex = lex, interpret = interpret }
+return { run = run, runfile = runfile, test = test, opFuncs = opFuncs, lex = lex, interpret = interpret, printStack = printStack }
