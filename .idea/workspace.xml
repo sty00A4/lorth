@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fdba2931-5b31-44f7-8a18-b0031dd44dac" name="Changes" comment="break keyword (weak functionality)" />
+    <list default="true" id="fdba2931-5b31-44f7-8a18-b0031dd44dac" name="Changes" comment="fixed lexer ignoring unrecognized chars, exit code fixed">
+      <change beforePath="$PROJECT_DIR$/lorth.lua" beforeDir="false" afterPath="$PROJECT_DIR$/lorth.lua" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -247,7 +249,14 @@
       <option name="project" value="LOCAL" />
       <updated>1656000287187</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="fixed lexer ignoring unrecognized chars, exit code fixed">
+      <created>1656000627975</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1656000627975</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -286,6 +295,7 @@
     <MESSAGE value="locals actually work now" />
     <MESSAGE value="shell addition, exit keyword" />
     <MESSAGE value="break keyword (weak functionality)" />
-    <option name="LAST_COMMIT_MESSAGE" value="break keyword (weak functionality)" />
+    <MESSAGE value="fixed lexer ignoring unrecognized chars, exit code fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed lexer ignoring unrecognized chars, exit code fixed" />
   </component>
 </project>

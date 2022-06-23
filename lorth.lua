@@ -760,7 +760,7 @@ local function interpret(tokens, stack, vars, locals, macros)
             end
             if token.value == keywords["exit"] then
                 local code = pop(stack) if not code then code = Number(0) end
-                os.exit(code.value)
+                os.exit(code:tonumber().value)
             end
             if token.value == keywords["break"] then break end
         end
