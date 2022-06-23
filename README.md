@@ -6,7 +6,7 @@ A stack based programming language written in lua
 
 | type                 | examples or description                 |
 |----------------------|-----------------------------------------|
-| number               | `1`,`2`,`3`, ...                        |
+| number               | `1`, `2`, `3`, ...                      |
 | char                 | `'a`, `'b`, ...                         |
 | string               | `"..."`                                 |
 | name                 | `var`, `age`, ...                       |
