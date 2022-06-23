@@ -63,6 +63,11 @@ local contStart = table.containsStart
 local contKeyStart = table.containsKeyStart
 local copy = table.copy
 
+---@param idx number
+---@param ln number
+---@param col number
+---@param fn string
+---@param text string
 local function Position(idx, ln, col, fn, text)
     return setmetatable(
             {
@@ -72,6 +77,8 @@ local function Position(idx, ln, col, fn, text)
             { __name = "position" }
     )
 end
+---@param start number
+---@param stop number
 local function PositionRange(start, stop)
     return setmetatable(
             {
@@ -81,6 +88,8 @@ local function PositionRange(start, stop)
             { __name = "positionRange" }
     )
 end
+---@param type_ string
+---@param pos table
 local function Token(type_, value, pos)
     return setmetatable(
             { type = type_, value = value, pos = pos, copy = function(s) return Token(s.type, s.value) end },
@@ -95,6 +104,9 @@ local function Token(type_, value, pos)
             end }
     )
 end
+---@param type_ string
+---@param details string
+---@param pos table
 local function Error(type_, details, pos)
     return setmetatable(
             { type = type_, details = details, pos = pos },
@@ -106,6 +118,7 @@ local function Error(type_, details, pos)
 end
 
 local Number, String, Char, Macro
+---@param number number
 Number = function(number)
     if number == math.floor(number) then number = math.floor(number) end
     return setmetatable(
@@ -132,6 +145,7 @@ Number = function(number)
             }
     )
 end
+---@param str string
 String = function(str)
     return setmetatable(
             { value = str, copy = function(s) return String(s.value) end,
@@ -161,6 +175,7 @@ String = function(str)
             }
     )
 end
+---@param char string
 Char = function(char)
     return setmetatable(
             { value = char, copy = function(s) return Char(s.value) end,
@@ -186,6 +201,7 @@ Char = function(char)
             }
     )
 end
+---@param proc table
 Macro = function(proc)
     return setmetatable(
             { proc = proc, copy = function(s) return Macro(s.proc) end },
@@ -303,8 +319,20 @@ opFuncs = {
         if stack[a.value+1] then push(stack, stack[a.value+1]) else return nil, Error("index error", "index out of range", token.pos) end
         return stack
     end,
+    ["or"] = function(stack)
+        local a = pop(stack) if not a then return stack end a = a:tonumber()
+        local b = pop(stack) if not b then return stack end b = b:tonumber()
+        if a.value ~= 0 or b.value ~= 0 then push(stack, Number(1)) else push(stack, Number(0)) end
+        return stack
+    end,
+    ["and"] = function(stack)
+        local a = pop(stack) if not a then return stack end a = a:tonumber()
+        local b = pop(stack) if not b then return stack end b = b:tonumber()
+        if a.value ~= 0 and b.value ~= 0 then push(stack, Number(1)) else push(stack, Number(0)) end
+        return stack
+    end,
     ["rot"] = function(stack)
-        local a = pop(stack, 1)
+        local a = pop(stack, #stack-2)
         if not a then return stack end
         push(stack, a)
         return stack
@@ -326,9 +354,19 @@ opFuncs = {
         return stack
     end,
     ["over"] = function(stack)
-        if not stack[1] then return stack end
+        local a = stack[#stack-1]:copy()
+        if not a then return stack end
+        push(stack, a)
+        return stack
+    end,
+    ["pick"] = function(stack)
         local a = stack[1]:copy()
         if not a then return stack end
+        push(stack, a)
+        return stack
+    end,
+    ["roll"] = function(stack)
+        local a = pop(stack, 1)
         push(stack, a)
         return stack
     end,
@@ -373,7 +411,7 @@ opFuncs = {
         push(stack, Number(math.ceil(a.value)))
         return stack
     end,
-    ["pop"] = function(stack)
+    ["drop"] = function(stack)
         pop(stack)
         return stack
     end,
@@ -695,6 +733,8 @@ local function test()
     return stack
 end
 
+---@param fn string
+---@param text string
 local function run(fn, text)
     local tokens, stack, err
     tokens, err = lex(fn, text) if err then print(err) return end
@@ -702,6 +742,7 @@ local function run(fn, text)
     return stack
 end
 
+---@param fn string
 local function runfile(fn)
     local file = io.open(fn, "r")
     local text = file:read("*a")
@@ -715,12 +756,6 @@ if os.version then
             local stack, err = runfile(args[1]) if err then print(err) return end
             for _, v in ipairs(stack) do io.write("[", tostring(v), "] ") end print()
         end
-    end
-else
-    local args = {...}
-    if args[1] then
-        local stack, err = runfile(args[1]) if err then print(err) return end
-        for _, v in ipairs(stack) do io.write("[", tostring(v), "] ") end print()
     end
 end
 
