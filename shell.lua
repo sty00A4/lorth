@@ -9,5 +9,6 @@ while true do
         stack_, vars_, locals_, macros_, err = lorth.interpret(tokens, stack, vars, locals, macros) if err then print(err) break end
         stack, vars, locals, macros = stack_, vars_, locals_, macros_
         lorth.printStack(stack)
+        print()
     end
 end

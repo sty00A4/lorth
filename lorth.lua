@@ -751,8 +751,8 @@ local function interpret(tokens, stack, vars, locals, macros)
             elseif token.value == keywords["local"] then
                 advance()
                 if token.type ~= "name" then return nil, vars, locals, macros, Error("syntax error", "expected name", token.pos:copy()) end
-                if vars[token.value] then return nil, vars, locals, macros, Error("name error", "name already registered in vars") end
-                if locals[token.value] then return nil, vars, locals, macros, Error("name error", "name already registered in locals, did you mean 'set' instead of 'local'") end
+                if vars[token.value] then return nil, vars, locals, macros, Error("name error", "name already registered in vars", token.pos:copy()) end
+                if locals[token.value] then return nil, vars, locals, macros, Error("name error", "name already registered in locals, did you mean 'set' instead of 'local'", token.pos:copy()) end
                 locals[token.value] = pop(stack)
                 advance()
             elseif token.value == keywords["set"] then
@@ -770,7 +770,7 @@ local function interpret(tokens, stack, vars, locals, macros)
                 local code = pop(stack) if not code then code = Number(0) end
                 os.exit(code:tonumber().value)
             elseif token.value == keywords["break"] then break
-            else return nil, vars, locals, macros, Error("syntax error", "keyword "..token.value.." not expected") end
+            else return nil, vars, locals, macros, Error("syntax error", "keyword "..token.value.." not expected", token.pos:copy()) end
         elseif token.type == "sub" then stack, vars, __, macros, err = interpret(token.value, copy(stack), extend(copy(vars), copy(locals)), nil, copy(macros)) if err then return nil, vars, locals, macros, err end advance()
         elseif token.type == "number" then push(stack, Number(token.value)) advance()
         elseif token.type == "char" then push(stack, Char(token.value)) advance()
