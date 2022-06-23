@@ -681,6 +681,8 @@ end
 ---@param macros table
 ---@param locals table
 local function interpret(tokens, stack, vars, locals, macros)
+    local meta = getmetatable(tokens)
+    if meta then if meta.__name == "token" then if meta.type == "sub" then tokens = meta.value else tokens = { tokens } end end end
     if not stack then stack = {} end
     if not vars then vars = {} end
     if not macros then macros = {} end
@@ -699,8 +701,7 @@ local function interpret(tokens, stack, vars, locals, macros)
                 advance()
                 local condition = stack[#stack]
                 if condition ~= nil then if condition ~= Number(0) then
-                    if token.type == "sub" then stack, vars, locals, macros, err = interpret(token.value, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
-                    else stack, vars, locals, macros, err = interpret({ token }, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end end
+                    stack, vars, _, macros, err = interpret(token, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
                 end end
                 advance()
             end
@@ -712,8 +713,7 @@ local function interpret(tokens, stack, vars, locals, macros)
                 if amount then if amount.value > 0 then
                     local before = i
                     for _ = 1, amount.value do
-                        if token.type == "sub" then stack, vars, locals, macros, err = interpret(token.value, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
-                        else stack, vars, locals, macros, err = interpret({ token }, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end end
+                        stack, vars, __, macros, err = interpret(token, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
                         i = before
                     end
                 end end
@@ -724,8 +724,7 @@ local function interpret(tokens, stack, vars, locals, macros)
                 if #stack > 0 then
                     local before = i
                     for _ = 1, #stack do
-                        if token.type == "sub" then stack, vars, locals, macros, err = interpret(token.value, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
-                        else stack, vars, locals, macros, err = interpret({ token }, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end end
+                        stack, vars, __, macros, err = interpret(token, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
                         stack = opFuncs.roll(stack)
                         i = before
                     end
@@ -744,8 +743,7 @@ local function interpret(tokens, stack, vars, locals, macros)
             if token.value == keywords["local"] then
                 advance()
                 if token.type ~= "name" then return nil, vars, locals, macros, Error("syntax error", "expected name", token.pos:copy()) end
-                vars[token.value] = pop(stack)
-                push(locals, token.value)
+                locals[token.value] = pop(stack)
                 advance()
             end
             if token.value == keywords["set"] then
@@ -761,16 +759,17 @@ local function interpret(tokens, stack, vars, locals, macros)
                 advance()
             end
         end
-        if token.type == "sub" then stack, vars, locals, macros, err = interpret(token.value, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end advance() end
+        if token.type == "sub" then stack, vars, __, macros, err = interpret(token.value, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end advance() end
         if token.type == "number" then push(stack, Number(token.value)) advance() end
         if token.type == "char" then push(stack, Char(token.value)) advance() end
         if token.type == "string" then push(stack, String(token.value)) advance() end
         if token.type == "name" then
             if macros[token.value] then
-                if type(macros[token.value].value) == "table" then stack, vars, locals, macros, err = interpret(macros[token.value].value, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
+                if type(macros[token.value].value) == "table" then stack, vars, locals, macros, err = interpret(macros[token.value], copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end
                 else stack, vars, locals, macros, err = interpret({ macros[token.value]:copy() }, copy(stack), copy(vars), copy(locals), copy(macros)) if err then return nil, vars, locals, macros, err end end
             else
                 if vars[token.value] then push(stack, vars[token.value]:copy())
+                elseif locals[token.value] then push(stack, locals[token.value]:copy())
                 else return nil, vars, locals, macros, Error("name error", "name not registered in the variables", token.pos:copy()) end
             end
             advance()
