@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fdba2931-5b31-44f7-8a18-b0031dd44dac" name="Changes" comment="&quot;local x&quot; now doesn't work if x is already in vars or locals,&#10;&quot;set&quot; has to be used even for reassigning local variables" />
+    <list default="true" id="fdba2931-5b31-44f7-8a18-b0031dd44dac" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/shell.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -29,19 +32,28 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/shell.bat" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\vince\PycharmProjects\lorth" />
     </key>
   </component>
-  <component name="RunManager" selected="Lua Application.test">
+  <component name="RunManager" selected="Batch.shell">
+    <configuration name="shell" type="BatchConfigurationType" factoryName="Batch">
+      <module name="lorth" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SCRIPT_NAME" value="./shell.bat" />
+      <option name="PARAMETERS" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="shell" type="lua.app" factoryName="Lua Application">
       <module name="lorth" />
       <option name="program" value="lua.exe" />
       <option name="file" value="shell.lua" />
-      <option name="workingDir" value="C:\Users\vince\PycharmProjects\lorth" />
+      <option name="workingDir" value="C:\Users\Vincent Reuter\PycharmProjects\lorth" />
       <option name="debuggerType" value="2" />
       <option name="params" value="" />
       <option name="charset" value="UTF-8" />
@@ -59,6 +71,7 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Batch.shell" />
       <item itemvalue="Lua Application.test" />
       <item itemvalue="Lua Application.shell" />
     </list>
@@ -275,7 +288,14 @@
       <option name="project" value="LOCAL" />
       <updated>1656004312996</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="gitignore /.idea">
+      <created>1656051280288</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1656051280288</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -290,7 +310,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="removed idiv" />
     <MESSAGE value="refactored &quot;!&quot; op" />
     <MESSAGE value="computercraft feature" />
     <MESSAGE value="local variable implementation" />
@@ -315,6 +334,7 @@
     <MESSAGE value="another exit code fix" />
     <MESSAGE value="variables final refactoring (hopefully)" />
     <MESSAGE value="&quot;local x&quot; now doesn't work if x is already in vars or locals,&#10;&quot;set&quot; has to be used even for reassigning local variables" />
-    <option name="LAST_COMMIT_MESSAGE" value="&quot;local x&quot; now doesn't work if x is already in vars or locals,&#10;&quot;set&quot; has to be used even for reassigning local variables" />
+    <MESSAGE value="gitignore /.idea" />
+    <option name="LAST_COMMIT_MESSAGE" value="gitignore /.idea" />
   </component>
 </project>
