@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fdba2931-5b31-44f7-8a18-b0031dd44dac" name="Changes" comment="&quot;local x&quot; now doesn't work if x is already in vars or locals,&#10;&quot;set&quot; has to be used even for reassigning local variables">
-      <change beforePath="$PROJECT_DIR$/lorth.lua" beforeDir="false" afterPath="$PROJECT_DIR$/lorth.lua" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shell.lua" beforeDir="false" afterPath="$PROJECT_DIR$/shell.lua" afterDir="false" />
-    </list>
+    <list default="true" id="fdba2931-5b31-44f7-8a18-b0031dd44dac" name="Changes" comment="&quot;local x&quot; now doesn't work if x is already in vars or locals,&#10;&quot;set&quot; has to be used even for reassigning local variables" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -39,7 +36,7 @@
       <recent name="C:\Users\vince\PycharmProjects\lorth" />
     </key>
   </component>
-  <component name="RunManager" selected="Lua Application.shell">
+  <component name="RunManager" selected="Lua Application.test">
     <configuration name="shell" type="lua.app" factoryName="Lua Application">
       <module name="lorth" />
       <option name="program" value="lua.exe" />
@@ -54,7 +51,7 @@
     <configuration name="test" type="lua.app" factoryName="Lua Application">
       <option name="program" value="lua.exe" />
       <option name="file" value="test.lua" />
-      <option name="workingDir" value="C:\Users\vince\PycharmProjects\lorth" />
+      <option name="workingDir" value="C:\Users\Vincent Reuter\PycharmProjects\lorth" />
       <option name="debuggerType" value="2" />
       <option name="params" value="" />
       <option name="charset" value="UTF-8" />
