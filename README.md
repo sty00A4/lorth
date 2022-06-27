@@ -16,7 +16,7 @@ A stack based programming language written in lua
 
 ## Interpreter
 If you just write a `number`, `char` or `string` in your program, it'll be put on the stack.
-If you write a `name` in your program, the value of that name will be put on the stack if registered in **variables** or **locals**
+If you write a `name` in your program, the value of that name will be put on the stack if registered in **variables** or **locals**, if registered in **macros** then the macro will be performed
 
 | operation | action display              | description                                                   |
 |-----------|-----------------------------|---------------------------------------------------------------|
