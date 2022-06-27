@@ -24,14 +24,14 @@ If you write a `name` in your program, the value of that name will be put on the
 | `-`       | `a b -> a-b`                | subtracts `b` from `a`                                        |
 | `*`       | `a b -> a*b`                | multiply `a` with                                             |
 | `/`       | `a b -> a/b`                | divides `b` from `a`                                          |
-| `**`      | `a b -> a^b`               | raises `a` to the power of `b`                                 |
-| `=`       | `a b -> 0/1`                | compares `a` and `b` for equality                             |
+| `**`      | `a b -> a^b`                | raises `a` to the power of `b`                                |
+| `=`       | `a b -> a=b`                | compares `a` and `b` for equality (true = 1, false = 0)       |
 | `!`       | `0 -> 1` & `1 -> 0`         | negates `a`                                                   |
-| `!=`      | `a b -> 0/1`                | compares `a` and `b` for none equality                        |
-| `<`       | `a b -> 0/1`                | compares for `a` is less than `b`                             |
-| `>`       | `a b -> 0/1`                | compares for `a` is greater than `b`                          |
-| `<=`      | `a b -> 0/1`                | compares for `a` is less than or equal to `b`                 |
-| `>=`      | `a b -> 0/1`                | compares for `a` is greater than or equal to `b`              |
+| `!=`      | `a b -> a≠b`                | compares `a` and `b` for none equality                        |
+| `<`       | `a b -> a<b`                | compares for `a` is less than `b`                             |
+| `>`       | `a b -> a>b`                | compares for `a` is greater than `b`                          |
+| `<=`      | `a b -> a≤b`                | compares for `a` is less than or equal to `b`                 |
+| `>=`      | `a b -> a≥b`                | compares for `a` is greater than or equal to `b`              |
 | `#`       | `a -> a stack[a]`           | gets value of index `a`                                       |
 | `drop`    | `a b -> a`                  | removes the top value from stack                              |
 | `dup`     | `a b -> a b b`              | copies the top value to the top of the stack                  |
