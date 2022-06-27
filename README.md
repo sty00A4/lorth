@@ -24,7 +24,7 @@ If you write a `name` in your program, the value of that name will be put on the
 | `-`       | `a b -> a-b`                | subtracts `b` from `a`                                        |
 | `*`       | `a b -> a*b`                | multiply `a` with                                             |
 | `/`       | `a b -> a/b`                | divides `b` from `a`                                          |
-| `**`      | `a b -> a**b`               | raises `a` to the power of `b`                                |
+| `**`      | `a b -> a^b`               | raises `a` to the power of `b`                                 |
 | `=`       | `a b -> 0/1`                | compares `a` and `b` for equality                             |
 | `!`       | `0 -> 1` & `1 -> 0`         | negates `a`                                                   |
 | `!=`      | `a b -> 0/1`                | compares `a` and `b` for none equality                        |
