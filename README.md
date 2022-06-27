@@ -44,7 +44,7 @@ If you write a `name` in your program, the value of that name will be put on the
 | `sort`    | `a b c -> ` value dependent | sorts the stack values from low to high                       |
 | `sum`     | `a b c -> a+b+c`            | sums up the stack values                                      |
 | `prod`    | `a b c -> a*b*c`            | multiplies all the stack values                               |
-| `range`   | `a b -> ` value dependent   | puts every value from `a` to `b` on the stack                 |
+| `range`   | `a b -> ` value dependent   | puts every whole number from `a` to `b` on the stack          |
 | `print`   | `a b c -> a b`              | prints the top stack value to the console and pops it         |
 | `write`   | `a b c -> a b`              | writes the top stack value to the console and pops it         |
 | `input`   | `a -> a (number input)`     | takes user input and puts it at the top (`0` if input is NaN) |
