@@ -66,5 +66,5 @@ If you write a `name` in your program, the value of that name will be put on the
 | `repeat` | executes following token top stack value's times and pops the top stack value                                   |
 | `set`    | sets the following name if registered in **variables** to the top stack value and pops the value of the stack   |
 | `local`  | sets the following name if registered in **locals** to the top stack value and pops the value of the stack      |
-| `macro`  | registers 1st following name with the second following token in the **macros**                                  |
+| `macro`  | registers 1st following name with the 2nd following token in the **macros**                                     |
 
