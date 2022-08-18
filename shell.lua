@@ -1,4 +1,4 @@
-local lorth = require("lorth")
+local lorth = require("src.lorth")
 local stack, vars, locals, macros
 while true do
     while true do
